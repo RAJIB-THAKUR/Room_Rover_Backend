@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true,
-    match: /^\d{10}$/
+    match: /^\d{10}$/,
   },
   // mobile: {
   //   type: String,
@@ -22,13 +22,13 @@ const userSchema = new mongoose.Schema({
   //   unique: true,
   //   min:10,
   //   max:10
-    // validate: {
-    //   validator: function (v) {
-    //     return /\d{3}-\d{3}-\d{4}/.test(v);
-    //   },
-    //   message: (props) => `${props.value} is not a valid phone number!`,
-    // },
-    // required: [true, "User phone number required"],
+  // validate: {
+  //   validator: function (v) {
+  //     return /\d{3}-\d{3}-\d{4}/.test(v);
+  //   },
+  //   message: (props) => `${props.value} is not a valid phone number!`,
+  // },
+  // required: [true, "User phone number required"],
   // },
   email: {
     type: String,

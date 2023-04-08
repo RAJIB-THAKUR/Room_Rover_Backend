@@ -46,10 +46,12 @@ exports.registerController = async (req, res, next) => {
       mobile,
       password: encryptedPassword,
     });
-    res.status(200).json({ res_Status: true, message: "User Registered" });
+    return res
+      .status(200)
+      .json({ res_Status: true, message: "User Registered" });
   } catch (error) {
     // console.log(error);
-    res.status(500).json({
+    return res.status(500).json({
       res_Status,
       error: "Couldn't sign up\nSOMETHING WENT WRONG\nInternal Server Error",
       message: error.message,
@@ -58,32 +60,41 @@ exports.registerController = async (req, res, next) => {
 };
 
 exports.loginController = async (req, res, next) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await User.findOne({ email }, { _id: 1, password: 1 });
+    const user = await User.findOne({ email }, { _id: 1, password: 1 });
 
-  if (!user) {
-    return res.status(400).json({
-      res_Status,
-      error: "User Not Found \nGet yourself Registered first",
-    });
-  }
-  if (await bcrypt.compare(password, user.password)) {
-    const token = jwt.sign({ _id: user._id }, JWT_SECRET);
-    // console.log(token);
-
-    if (res.status(201)) {
-      return res.json({
-        res_Status: true,
-        authtoken: token,
-        message: "Successfully Logged In",
-      });
-    } else {
-      return res.json({
+    if (!user) {
+      return res.status(400).json({
         res_Status,
-        error: "Some Error Ocurred\nTry Again",
+        error: "User Not Found \nGet yourself Registered first",
       });
     }
+    if (await bcrypt.compare(password, user.password)) {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET);
+      // console.log(token);
+
+      if (res.status(201)) {
+        return res.json({
+          res_Status: true,
+          authtoken: token,
+          message: "Successfully Logged In",
+        });
+      } else {
+        return res.json({
+          res_Status,
+          error: "Some Error Ocurred\nTry Again",
+        });
+      }
+    }
+    return res.json({ res_Status, error: "Invalid Password" });
+  } catch (error) {
+    // console.log(error);
+    return res.status(500).json({
+      res_Status,
+      error: "Couldn't sign up\nSOMETHING WENT WRONG\nInternal Server Error",
+      message: error.message,
+    });
   }
-  res.json({ res_Status, error: "Invalid Password" });e
 };

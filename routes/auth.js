@@ -5,16 +5,26 @@ const router = express.Router();
 const User = require("../models/user_Model");
 
 //-------------------------------------ROUTES----------------------------
-const authValidator = require("../validators/auth")
- 
-const runValidation = require('../validators/validationResult')
-const authController = require('../controllers/auth')
+const authValidator = require("../validators/auth");
+
+const runValidation = require("../validators/validationResult");
+const authController = require("../controllers/auth");
 
 //ROUTE-1 : "register" user
-router.post('/register', authValidator.userRegisterValidator, runValidation, authController.registerController)
+router.post(
+  "/register",
+  authValidator.userRegisterValidator,
+  runValidation,
+  authController.registerController
+);
 
 //ROUTE-2: "Login" user
-router.post('/login', authValidator.userLoginValidator, runValidation, authController.loginController)
+router.post(
+  "/login",
+  authValidator.userLoginValidator,
+  runValidation,
+  authController.loginController
+);
 
 /*
 //ROUTE-1: "register" user
@@ -71,4 +81,4 @@ router.post(
   );
 */
 
-  module.exports = router;
+module.exports = router;
