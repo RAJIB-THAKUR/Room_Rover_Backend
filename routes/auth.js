@@ -1,21 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const ObjectId = require("mongodb").ObjectId;
-const res_Status = false;
-
 
 //Models
 const User = require("../models/user_Model");
-
-//To Validate  User-Inputs
-const { body, validationResult } = require("express-validator");
-
-//To Encrypt Passwords
-const bcrypt = require("bcryptjs") ;
-
-//To Generate tokens on user-login
-const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET;
 
 //-------------------------------------ROUTES----------------------------
 const authValidator = require("../validators/auth")
