@@ -66,7 +66,7 @@ exports.loginController = async (req, res, next) => {
     const user = await User.findOne({ email }, { _id: 1, password: 1 });
 
     if (!user) {
-      return res.status(400).json({
+      return res.status(401).json({
         res_Status,
         error: "User Not Found \nGet yourself Registered first",
       });
@@ -75,20 +75,20 @@ exports.loginController = async (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET);
       // console.log(token);
 
-      if (res.status(201)) {
-        return res.json({
+      if (res.status(200)) {
+        return res.status(200).json({
           res_Status: true,
           authtoken: token,
           message: "Successfully Logged In",
         });
       } else {
-        return res.json({
+        return res.status(500).json({
           res_Status,
           error: "Some Error Ocurred\nTry Again",
         });
       }
     }
-    return res.json({ res_Status, error: "Invalid Password" });
+    return res.status(401).json({ res_Status, error: "Invalid Password" });
   } catch (error) {
     // console.log(error);
     return res.status(500).json({
