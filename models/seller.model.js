@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const ObjectId = require("mongodb").ObjectID;
 
-const userSchema = new mongoose.Schema({
-  // _id: { type: ObjectId },
+const sellerSchema = new mongoose.Schema({
+  _id: { type: ObjectId },
   name: {
     type: String,
     trim: true,
@@ -16,20 +16,6 @@ const userSchema = new mongoose.Schema({
     trim: true,
     match: /^\d{10}$/,
   },
-  // mobile: {
-  //   type: String,
-  //   required: true,
-  //   unique: true,
-  //   min:10,
-  //   max:10
-  // validate: {
-  //   validator: function (v) {
-  //     return /\d{3}-\d{3}-\d{4}/.test(v);
-  //   },
-  //   message: (props) => `${props.value} is not a valid phone number!`,
-  // },
-  // required: [true, "User phone number required"],
-  // },
   email: {
     type: String,
     trim: true,
@@ -41,10 +27,27 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-
   prof_Pic: { type: String },
   otp: { type: String },
+  // rooms: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Room",
+  //   },
+  // ],
+  bookings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Booking",
+    },
+  ],
+  hotels: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Hotel",
+    },
+  ],
 });
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+const Seller = mongoose.model("User", userSchema);
+module.exports = Seller;

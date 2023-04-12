@@ -1,5 +1,10 @@
-const User = require("../models/user_Model");
-const res_Status = false;
+const User = require("../models/user.model");
+const Booking = require('../models/booking.model');
+const User = require('../models/user.model');
+const Hotel = require('../models/hotel.model');
+const Room = require('../models/room.model');
+const Seller = require('../models/seller.model');
+const success = false;
 
 //To Encrypt Passwords
 const bcrypt = require("bcryptjs");
@@ -19,7 +24,7 @@ exports.registerController = async (req, res, next) => {
 
     if (oldUser_Same_Email) {
       return res.status(409).json({
-        res_Status,
+        success,
         error: "User Already Exists with this email address",
       });
     }
@@ -33,12 +38,12 @@ exports.registerController = async (req, res, next) => {
       //Check if new-mobile is registered with some other user
       if (oldUser_Same_Mobile) {
         return res.status(409).json({
-          res_Status,
+          success,
           error: "User Already Exists with this Mobile",
         });
       }
     }
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(process.env.no_Of_Rounds);
     const encryptedPassword = await bcrypt.hash(password, salt);
     await User.create({
       name,
@@ -46,13 +51,14 @@ exports.registerController = async (req, res, next) => {
       mobile,
       password: encryptedPassword,
     });
-    return res
-      .status(200)
-      .json({ res_Status: true, message: "User Registered" });
+    return res.status(200).json({
+      success: true,
+      message: "User Registered",
+    });
   } catch (error) {
     // console.log(error);
     return res.status(500).json({
-      res_Status,
+      success,
       error: "Couldn't sign up\nSOMETHING WENT WRONG\nInternal Server Error",
       message: error.message,
     });
@@ -67,34 +73,59 @@ exports.loginController = async (req, res, next) => {
 
     if (!user) {
       return res.status(401).json({
-        res_Status,
-        error: "User Not Found \nGet yourself Registered first",
+        success,
+        error: "User with this email does not exist\nPlease Signup first",
       });
     }
     if (await bcrypt.compare(password, user.password)) {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET);
-      // console.log(token);
 
       if (res.status(200)) {
         return res.status(200).json({
-          res_Status: true,
-          authtoken: token,
+          success: true,
+          token: token,
           message: "Successfully Logged In",
         });
       } else {
         return res.status(500).json({
-          res_Status,
+          success,
           error: "Some Error Ocurred\nTry Again",
         });
       }
     }
-    return res.status(401).json({ res_Status, error: "Invalid Password" });
+    return res.status(401).json({
+      success,
+      error: "Invalid Password",
+    });
   } catch (error) {
     // console.log(error);
     return res.status(500).json({
-      res_Status,
+      success,
       error: "Couldn't sign up\nSOMETHING WENT WRONG\nInternal Server Error",
       message: error.message,
     });
   }
+};
+
+
+
+const findUserBookings = async (userId) => {
+  const userBookings = await Booking.find({ user: userId })
+    .populate({
+      path: 'room',
+      model: 'Room',
+      populate: {
+        path: 'hotel',
+        model: 'Hotel',
+        select: 'name location',
+        populate: {
+          path: 'seller',
+          model: 'Seller',
+          select: 'name email'
+        }
+      }
+    })
+    .exec();
+
+  return userBookings;
 };
