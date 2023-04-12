@@ -14,7 +14,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.registerController = async (req, res, next) => {
   const { name, email, mobile, password } = req.body;
-  console.log(1);
+  // console.log(1);
   try {
     const oldUser_Same_Email = await User.findOne(
       { email },
@@ -27,14 +27,14 @@ exports.registerController = async (req, res, next) => {
         error: "User Already Exists with this email address",
       });
     }
-    console.log(2);
+    // console.log(2);
     const oldUser_Same_Mobile = await User.findOne(
       {
         mobile: mobile,
       },
       { _id: 0, mobile: 1 }
     );
-    console.log(3);
+    // console.log(3);
     if (oldUser_Same_Mobile) {
       //Check if new-mobile is registered with some other user
       if (oldUser_Same_Mobile) {
@@ -44,17 +44,17 @@ exports.registerController = async (req, res, next) => {
         });
       }
     }
-    console.log(4);
+    // console.log(4);
     const salt = await bcrypt.genSalt(parseInt(process.env.no_Of_Rounds));
     const encryptedPassword = await bcrypt.hash(password, 10);
-    console.log(5);
+    // console.log(5);
     await User.create({
       name,
       email,
       mobile,
       password: encryptedPassword,
     });
-    console.log(6);
+    // console.log(6);
     return res.status(200).json({
       success: true,
       message: "User Registered",
