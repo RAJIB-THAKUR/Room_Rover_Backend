@@ -1,8 +1,8 @@
 const User = require("../models/user.model");
-const Booking = require('../models/booking.model');
-const Hotel = require('../models/hotel.model');
-const Room = require('../models/room.model');
-const Seller = require('../models/seller.model');
+const Booking = require("../models/booking.model");
+const Hotel = require("../models/hotel.model");
+const Room = require("../models/room.model");
+const Seller = require("../models/seller.model");
 const success = false;
 
 //To Encrypt Passwords
@@ -73,7 +73,10 @@ exports.loginController = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }, { _id: 1, password: 1 });
+    const user = await User.findOne(
+      { email },
+      { _id: 1, password: 1, verified: 1 }
+    );
 
     if (!user) {
       return res.status(401).json({
@@ -82,6 +85,14 @@ exports.loginController = async (req, res, next) => {
       });
     }
     if (await bcrypt.compare(password, user.password)) {
+      if (user.verified === false) {
+        return res.status(401).json({
+          success,
+          error:
+            "User not verified yet\nVerify your account and try signing in",
+          message: "Unverified",
+        });
+      }
       const token = jwt.sign({ _id: user._id }, JWT_SECRET);
 
       if (res.status(200)) {
@@ -111,22 +122,21 @@ exports.loginController = async (req, res, next) => {
   }
 };
 
-
 const findUserBookings = async (userId) => {
   const userBookings = await Booking.find({ user: userId })
     .populate({
-      path: 'room',
-      model: 'Room',
+      path: "room",
+      model: "Room",
       populate: {
-        path: 'hotel',
-        model: 'Hotel',
-        select: 'name location',
+        path: "hotel",
+        model: "Hotel",
+        select: "name location",
         populate: {
-          path: 'seller',
-          model: 'Seller',
-          select: 'name email'
-        }
-      }
+          path: "seller",
+          model: "Seller",
+          select: "name email",
+        },
+      },
     })
     .exec();
 
