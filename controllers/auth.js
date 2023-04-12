@@ -108,7 +108,6 @@ exports.loginController = async (req, res, next) => {
 };
 
 
-
 const findUserBookings = async (userId) => {
   const userBookings = await Booking.find({ user: userId })
     .populate({
