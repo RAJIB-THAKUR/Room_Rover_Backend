@@ -36,9 +36,14 @@ const userSchema = new mongoose.Schema({
   },
   verified: {
     type: Boolean,
+    required: true,
     default: false,
   },
-  otp: { type: String, default: "##########" },
+  otp: {
+    type: String,
+    required: true,
+    default: "##########",
+  },
   bookings: [
     {
       type: mongoose.Schema.Types.ObjectId,
