@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema({
     trim: true,
     required: true,
     max: 50,
+    default: "Not provided yet",
   },
   verified: {
     type: Boolean,
