@@ -1,6 +1,5 @@
 const User = require("../models/user.model");
 const Booking = require('../models/booking.model');
-const User = require('../models/user.model');
 const Hotel = require('../models/hotel.model');
 const Room = require('../models/room.model');
 const Seller = require('../models/seller.model');
