@@ -358,7 +358,13 @@ exports.updatePassword = async (req, res, next) => {
       { email: email },
       { _id: 0, password: 1 }
     );
-
+    if (!user) {
+      return res.status(401).json({
+        success,
+        error: "User with this email does not exist\nPlease Signup first",
+        message: "Error",
+      });
+    }
     if (await bcrypt.compare(new_Password, user.password)) {
       return res.status(400).json({
         success,
@@ -401,6 +407,7 @@ exports.updatePassword = async (req, res, next) => {
     );
   } catch (error) {
     res.status(500).send({
+      success,
       error: "Some internal error occured\nTry Again",
       message: error.message,
     });

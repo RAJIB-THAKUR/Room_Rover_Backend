@@ -24,14 +24,28 @@ router.post(
   authController.loginController
 );
 
-
 //Route-3: OTP generation - Forgotten Password Feature
-router.post("/generateOTP", authController.generateOTP);
+router.post(
+  "/generateOTP",
+  authValidator.generateOTPValidator,
+  runValidation,
+  authController.generateOTP
+);
 
 //ROUTE-4: "verify OTP" for account activation and forgot password
-router.post("/verifyOTP", authController.verifyOTP);
+router.post(
+  "/verifyOTP",
+  authValidator.verifyOTPValidator,
+  runValidation,
+  authController.verifyOTP
+);
 
 //Route-5: Update Password - Forgotten Password Feature
-router.post("/updatePassword", authController.updatePassword);
+router.post(
+  "/updatePassword",
+  authValidator.updatePasswordValidator,
+  runValidation,
+  authController.updatePassword
+);
 
 module.exports = router;
