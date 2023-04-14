@@ -8,7 +8,7 @@ const mailOTP = async (email, type, callback) => {
   const salt = await bcrypt.genSalt(parseInt(process.env.no_Of_Rounds));
   const encryptedOTP = await bcrypt.hash(otp, salt);
   let msg = "";
-  
+
   if (type === "resetPswd") {
     msg = {
       from: process.env.room_Rover_Email_ID,

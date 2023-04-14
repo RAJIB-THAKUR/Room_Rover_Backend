@@ -8,7 +8,7 @@ const authController = require("../controllers/auth");
 
 //-------------------------------------ROUTES-----------------------
 
-//ROUTE-1 : "register" 
+//ROUTE-1 : "register"
 router.post(
   "/register",
   authValidator.userRegisterValidator,
@@ -16,7 +16,7 @@ router.post(
   authController.registerController
 );
 
-//ROUTE-2: "login" 
+//ROUTE-2: "login"
 router.post(
   "/login",
   authValidator.userLoginValidator,
@@ -25,12 +25,12 @@ router.post(
 );
 
 //ROUTE-3: "verify OTP" for account activation and forgot password
-router.post("/verifyOTP",authController.verifyOTP);
+router.post("/verifyOTP", authController.verifyOTP);
 
 //Route-4: OTP generation - Forgotten Password Feature
-router.post("/generateOTP",authController.generateOTP);
+router.post("/generateOTP", authController.generateOTP);
 
 //Route-5: Update Password - Forgotten Password Feature
-router.post("/updatePassword",authController.generateOTP);
+router.post("/updatePassword", authController.updatePassword);
 
 module.exports = router;

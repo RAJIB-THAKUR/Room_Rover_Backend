@@ -60,7 +60,7 @@ exports.registerController = async (req, res, next) => {
 
     // console.log(4);
     const salt = await bcrypt.genSalt(parseInt(process.env.no_Of_Rounds));
-    const encryptedPassword = await bcrypt.hash(password, 10);
+    const encryptedPassword = await bcrypt.hash(password, salt);
 
     await UserSeller.create({
       name,
@@ -121,7 +121,16 @@ exports.registerController = async (req, res, next) => {
 
 exports.loginController = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { userSellerType, email, password } = req.body;
+
+    if (userSellerType === "user") UserSeller = User;
+    else if (userSellerType === "seller") UserSeller = Seller;
+    else
+      return res.status(401).json({
+        success,
+        error: "Some internal error occured\nTry Again",
+        message: "User or Seller type missing in request body",
+      });
 
     const user = await UserSeller.findOne(
       { email },
@@ -176,7 +185,16 @@ exports.loginController = async (req, res, next) => {
 
 exports.generateOTP = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { userSellerType, email } = req.body;
+
+    if (userSellerType === "user") UserSeller = User;
+    else if (userSellerType === "seller") UserSeller = Seller;
+    else
+      return res.status(401).json({
+        success,
+        error: "Some internal error occured\nTry Again",
+        message: "User or Seller type missing in request body",
+      });
 
     UserSeller.findOne({ email: email }, async (err, user) => {
       if (user) {
@@ -241,7 +259,17 @@ exports.generateOTP = async (req, res) => {
 
 exports.verifyOTP = async (req, res, next) => {
   try {
-    const { token, otp, type } = req.body;
+    const { userSellerType, token, otp, type } = req.body;
+
+    if (userSellerType === "user") UserSeller = User;
+    else if (userSellerType === "seller") UserSeller = Seller;
+    else
+      return res.status(401).json({
+        success,
+        error: "Some internal error occured\nTry Again",
+        message: "User or Seller type missing in request body",
+      });
+
     const email = jwt.verify(token, JWT_SECRET).email;
 
     const user = await UserSeller.findOne({ email: email }, { _id: 1, otp: 1 });
@@ -253,7 +281,7 @@ exports.verifyOTP = async (req, res, next) => {
         message: "Error",
       });
     }
-    console.log(user);
+    // console.log(user);
     if (await bcrypt.compare(otp, user.otp)) {
       if (type === "resetPswd") {
         return res.status(200).json({
@@ -288,8 +316,8 @@ exports.verifyOTP = async (req, res, next) => {
               } else
                 res.status(500).json({
                   success,
-                  error: "Some internal error occured\nTry Again",
-                  message: "Errorrr",
+                  error: "Account verification is already done",
+                  message: "Error",
                 });
             }
           }
@@ -308,6 +336,75 @@ exports.verifyOTP = async (req, res, next) => {
       error: "Internal Server Error\nPlease try again.",
       message: error.message,
     });
+  }
+};
+
+exports.updatePassword = async (req, res, next) => {
+  try {
+    const { userSellerType, token, new_Password } = req.body;
+
+    if (userSellerType === "user") UserSeller = User;
+    else if (userSellerType === "seller") UserSeller = Seller;
+    else
+      return res.status(401).json({
+        success,
+        error: "Some internal error occured\nTry Again",
+        message: "User or Seller type missing in request body",
+      });
+
+    const email = jwt.verify(token, JWT_SECRET).email;
+
+    const user = await UserSeller.findOne(
+      { email: email },
+      { _id: 0, password: 1 }
+    );
+
+    if (await bcrypt.compare(new_Password, user.password)) {
+      return res.status(400).json({
+        success,
+        error:
+          "New Password and current password cannot be same\nEnter new password",
+        message: "Error",
+      });
+    }
+
+    const salt = await bcrypt.genSalt(parseInt(process.env.no_Of_Rounds));
+    const encryptedPassword = await bcrypt.hash(new_Password, salt);
+
+    UserSeller.updateOne(
+      { email: email },
+      {
+        password: encryptedPassword,
+      },
+      async (error, ans) => {
+        if (error)
+          res.status(500).send({
+            success,
+            error: "Could not Update Password",
+            message: error.message,
+          });
+        else {
+          if (ans.modifiedCount === 1) {
+            res.status(200).send({
+              success,
+              message: "Password Updated Successfully",
+            });
+          } else {
+            res.status(500).send({
+              success,
+              error: "Could not Update Password\nSome Error Occured",
+              message: "Password not updated in DB",
+            });
+          }
+        }
+      }
+    );
+  } catch (error) {
+    res.status(500).send({
+      error: "Some internal error occured\nTry Again",
+      message: error.message,
+    });
+    // console.log(error);
   }
 };
 
