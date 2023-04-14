@@ -123,7 +123,7 @@ exports.loginController = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne(
+    const user = await UserSeller.findOne(
       { email },
       { _id: 1, password: 1, verified: 1 }
     );
@@ -178,7 +178,7 @@ exports.generateOTP = async (req, res) => {
   try {
     const { email } = req.body;
 
-    User.findOne({ email: email }, async (err, user) => {
+    UserSeller.findOne({ email: email }, async (err, user) => {
       if (user) {
         mailOTP(email, "resetPswd", (error, encryptedOTP) => {
           if (error) {
@@ -189,7 +189,7 @@ exports.generateOTP = async (req, res) => {
               message: error.message,
             });
           } else {
-            User.updateOne(
+            UserSeller.updateOne(
               {
                 email: email,
               },
@@ -244,7 +244,7 @@ exports.verifyOTP = async (req, res, next) => {
     const { token, otp, type } = req.body;
     const email = jwt.verify(token, JWT_SECRET).email;
 
-    const user = await User.findOne({ email: email }, { _id: 1, otp: 1 });
+    const user = await UserSeller.findOne({ email: email }, { _id: 1, otp: 1 });
 
     if (!user) {
       return res.status(401).json({
@@ -264,7 +264,7 @@ exports.verifyOTP = async (req, res, next) => {
       }
 
       if (type === "verifyAccount") {
-        User.updateOne(
+        UserSeller.updateOne(
           {
             _id: user._id,
           },
