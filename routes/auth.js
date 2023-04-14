@@ -24,11 +24,12 @@ router.post(
   authController.loginController
 );
 
-//ROUTE-3: "verify OTP" for account activation and forgot password
-router.post("/verifyOTP", authController.verifyOTP);
 
-//Route-4: OTP generation - Forgotten Password Feature
+//Route-3: OTP generation - Forgotten Password Feature
 router.post("/generateOTP", authController.generateOTP);
+
+//ROUTE-4: "verify OTP" for account activation and forgot password
+router.post("/verifyOTP", authController.verifyOTP);
 
 //Route-5: Update Password - Forgotten Password Feature
 router.post("/updatePassword", authController.updatePassword);
