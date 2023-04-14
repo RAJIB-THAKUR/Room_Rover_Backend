@@ -97,7 +97,7 @@ exports.registerController = async (req, res, next) => {
                   success: true,
                   token: token,
                   message:
-                    "Account activation code successfully sent to your Email-id\nVerify your account",
+                    "Account activation code has been sent to your Email-id\nVerify your account to complete the registration process",
                 });
               } else
                 res.status(500).json({

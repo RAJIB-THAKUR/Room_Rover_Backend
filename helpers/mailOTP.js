@@ -36,13 +36,15 @@ const mailOTP = async (email, type, callback) => {
     <p>
       Hiii ${email},
       <br><br>
-      We have received a request for verification of your RoomRover account.
+      RoomRover welcomes you as the new member of this big family.
+      <br>
+      Kindly do verify your account within 24 hours to complete your registration process.
       <br><br>
       Enter the following account verification code:
       <br><br>
       <b>${otp}</b>
       <br><br>
-      If it was not you, write us back at ${process.env.room_Rover_Email_ID}.
+      If this was not you, write us back here at ${process.env.room_Rover_Email_ID}.
     </p>`,
     };
   } else {
