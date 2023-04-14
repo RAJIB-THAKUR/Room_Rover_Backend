@@ -4,7 +4,7 @@ const Seller = require("../models/seller.model");
 
 //Delete unverified users and sellers older than 1 day
 const deleteUnverifiedAccounts = async () => {
-  console.log(`Date when deleted unverified accounts --> ${ new Date()} `);
+  console.log(`Date when deleted unverified accounts --> ${new Date()} `);
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
   const unverifiedUsers = await User.find({
