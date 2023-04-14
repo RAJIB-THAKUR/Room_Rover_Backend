@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const ObjectId = require("mongodb").ObjectID;
 
 const sellerSchema = new mongoose.Schema({
-  _id: { type: ObjectId },
+  // _id: { type: ObjectId },
   name: {
     type: String,
     trim: true,
@@ -49,5 +49,5 @@ const sellerSchema = new mongoose.Schema({
   ],
 });
 
-const Seller = mongoose.model("User", sellerSchema);
+const Seller = mongoose.model("Seller", sellerSchema);
 module.exports = Seller;
