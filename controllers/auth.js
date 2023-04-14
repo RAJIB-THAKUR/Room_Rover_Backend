@@ -177,7 +177,7 @@ exports.loginController = async (req, res, next) => {
     // console.log(error);
     return res.status(500).json({
       success,
-      error: "Couldn't sign up\nSOMETHING WENT WRONG\nInternal Server Error",
+      error: "Couldn't sign up\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
