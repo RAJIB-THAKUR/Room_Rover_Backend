@@ -47,6 +47,7 @@ const sellerSchema = new mongoose.Schema({
       ref: "Hotel",
     },
   ],
+  createdAt: { type: Date, default: Date.now },
 });
 
 const Seller = mongoose.model("Seller", sellerSchema);

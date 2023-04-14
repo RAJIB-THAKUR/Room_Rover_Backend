@@ -50,6 +50,7 @@ const userSchema = new mongoose.Schema({
       ref: "Booking",
     },
   ],
+  createdAt: { type: Date, default: Date.now },
   // prof_Pic: { type: String },
 });
 
