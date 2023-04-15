@@ -28,6 +28,11 @@ const sellerSchema = new mongoose.Schema({
     required: true,
   },
   prof_Pic: { type: String },
+  verified: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   otp: { type: String },
   // rooms: [
   //   {

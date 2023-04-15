@@ -3,27 +3,37 @@ const mongoose = require("mongoose");
 const hotelSchema = new mongoose.Schema({
   name: {
     type: String,
+    trim: true,
     required: true,
+    max: 32,
   },
   description: {
     type: String,
-    required: true,
+    trim: true,
+    max: 100,
   },
   address: {
     type: String,
+    trim: true,
     required: true,
+    max: 100,
   },
   city: {
     type: String,
+    trim: true,
     required: true,
+    max: 30,
   },
-  phone: {
+  mobile: {
     type: String,
     required: true,
+    // unique: true,
+    trim: true,
+    match: /^\d{10}$/,
   },
   image: {
     type: String,
-    required: true,
+    // required: true,
   },
   seller: {
     type: mongoose.Schema.Types.ObjectId,

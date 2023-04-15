@@ -3,15 +3,21 @@ const mongoose = require("mongoose");
 const roomSchema = new mongoose.Schema({
   number: {
     type: String,
+    trim: true,
     required: true,
+    max: 3,
+    min: 3,
   },
-  type: {
+  roomType: {
     type: String,
+    trim: true,
     required: true,
+    max: 15,
   },
   description: {
     type: String,
-    required: true,
+    trim: true,
+    max: 100,
   },
   capacity: {
     type: Number,
