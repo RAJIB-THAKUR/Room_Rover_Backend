@@ -52,6 +52,10 @@ const hotelSchema = new mongoose.Schema({
       ref: "Booking",
     },
   ],
+  //room count
+  //price
+  //bookedRoomCount
+  // buildingType:[mess,hotel,hostel,bungalow,villa]
 });
 
 const Hotel = mongoose.model("Hotel", hotelSchema);

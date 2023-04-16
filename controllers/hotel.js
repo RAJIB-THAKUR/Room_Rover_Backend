@@ -12,7 +12,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const ObjectId = require("mongodb").ObjectId;
 
 exports.addHotel = async (req, res, next) => {
-
   const { token, name, description, address, city, mobile } = req.body;
 
   try {
@@ -76,8 +75,7 @@ exports.addHotel = async (req, res, next) => {
                       if (ans.modifiedCount === 1) {
                         console.log(9);
                         res.status(200).json({
-                          message:
-                            "Hotel successfully added.\nNow you can add Hotel's room Details",
+                          message: "Hotel details successfully added.",
                           ans,
                         });
                       } else {
