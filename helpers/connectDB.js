@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 const dotenv = require("dotenv");
 dotenv.config();
-const DB = process.env.DATABASE;
+// const DB = process.env.DATABASE;
+const DB="mongodb://localhost:27017/Room_Rover_Local_DB"
 
 //Function to Connect MongoDB
 const connect_MongoDB = () => {

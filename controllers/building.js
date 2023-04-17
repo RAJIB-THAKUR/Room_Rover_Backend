@@ -178,3 +178,104 @@ exports.allCities_roomCount_minCost = async (req, res, next) => {
     });
   }
 };
+
+exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
+  const { token } = req.body;
+  try {
+    const _id = jwt.verify(token, JWT_SECRET)._id;
+    // console.log(_id);
+    Building.aggregate([
+      { $match: { seller: new ObjectId(_id) } },
+      {
+        //if all fields of building required
+        // $group: { _id: "$city", buildings: { $push: "$$ROOT" } },
+        $group: {
+          _id: "$city",
+          buildings: {
+            $push: {
+              name: "$name",
+              address: "$address",
+              buildingType: "$buildingType",
+              price: "$price",
+              roomCount: "$roomCount",
+            },
+          },
+        },
+      },
+    ]).exec((error, result) => {
+      if (error) {
+        return res.status(500).json({
+          success,
+          error:
+            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+          message: error.message,
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          data: result,
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
+
+exports.seller_buildingDetails_type_City_Wise = async (req, res, next) => {
+  const { token, city, buildingType } = req.body;
+  try {
+    const _id = jwt.verify(token, JWT_SECRET)._id;
+    // console.log(_id);
+    const match = {
+      seller: new ObjectId(_id),
+    };
+    if (city) {
+      match.city = city;
+    }
+    if (buildingType) {
+      match.buildingType = buildingType;
+    }
+
+    Building.aggregate([
+      {
+        $match: match,
+      },
+      // {
+      //   $project: {
+      //     name: 1,
+      //     address: 1,
+      //     buildingType: 1,
+      //     price: 1,
+      //     roomCount: 1,
+      //   },
+      // },
+    ]).exec((error, result) => {
+      if (error) {
+        return res.status(500).json({
+          success,
+          error:
+            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+          message: error.message,
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          data: result,
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
