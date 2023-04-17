@@ -46,6 +46,15 @@ const buildingSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  booked: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  available: {
+    type: Number,
+    required: true,
+  },
   image: {
     type: String,
     // required: true,

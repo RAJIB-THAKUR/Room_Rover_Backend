@@ -15,4 +15,10 @@ router.post(
   buildingController.addBuilding
 );
 
+//ROUTE-2 : "deleteBuilding"
+router.post("/deleteBuilding", buildingController.deleteBuilding);
+
+//ROUTE-3 : All City wise room counts & minimum cost
+router.post("/allCities_roomCount_minCost", buildingController.allCities_roomCount_minCost);
+
 module.exports = router;

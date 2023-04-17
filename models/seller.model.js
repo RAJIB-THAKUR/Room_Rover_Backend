@@ -7,7 +7,7 @@ const sellerSchema = new mongoose.Schema({
     type: String,
     trim: true,
     required: true,
-    max: 32,
+    max: 50,
   },
   mobile: {
     type: String,
@@ -46,12 +46,12 @@ const sellerSchema = new mongoose.Schema({
       ref: "Booking",
     },
   ],
-  buildings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Building",
-    },
-  ],
+  // buildings: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Building",
+  //   },
+  // ],
   createdAt: { type: Date, default: Date.now },
 });
 

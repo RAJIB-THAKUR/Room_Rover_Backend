@@ -2,11 +2,13 @@ const { check } = require("express-validator");
 
 exports.userRegisterValidator = [
   check("name")
+    .notEmpty()
+    .withMessage("Name is required")
     .isLength({
       min: 1,
-      max: 32,
+      max: 50,
     })
-    .withMessage("Name is required"),
+    .withMessage("Name should contain upto 50 characters only"),
 
   check("mobile")
     .matches(/^\d{10}$/) // Use regular expression to validate format

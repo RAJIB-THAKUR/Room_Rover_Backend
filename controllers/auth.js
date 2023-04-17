@@ -1,4 +1,4 @@
-const  User = require("../models/user.model");
+const User = require("../models/user.model");
 const Booking = require("../models/booking.model");
 const Building = require("../models/building.model");
 const Room = require("../models/room.model");
@@ -85,7 +85,7 @@ exports.registerController = async (req, res, next) => {
           { $set: { otp: encryptedOTP } },
           async (error, ans) => {
             if (error) {
-              res.status(500).json({
+              return res.status(500).json({
                 success,
                 error: "Some error occured",
                 message: "OTP not updated in db",
@@ -93,14 +93,14 @@ exports.registerController = async (req, res, next) => {
             } else {
               if (ans.modifiedCount === 1) {
                 const token = jwt.sign({ email: email }, JWT_SECRET);
-                res.status(200).json({
+                return res.status(200).json({
                   success: true,
                   token: token,
                   message:
                     "Account activation code has been sent to your Email-id\nVerify your account to complete the registration process",
                 });
               } else
-                res.status(500).json({
+                return res.status(500).json({
                   success,
                   message: "Error",
                   error: "Some internal error occured\nTry Again",
@@ -156,18 +156,11 @@ exports.loginController = async (req, res, next) => {
       }
       const token = jwt.sign({ _id: user._id }, JWT_SECRET);
 
-      if (res.status(200)) {
-        return res.status(200).json({
-          success: true,
-          token: token,
-          message: "Successfully Logged In",
-        });
-      } else {
-        return res.status(500).json({
-          success,
-          error: "Some Error Ocurred\nTry Again",
-        });
-      }
+      return res.status(200).json({
+        success: true,
+        token: token,
+        message: "Successfully Logged In",
+      });
     }
     return res.status(401).json({
       success,
@@ -214,7 +207,7 @@ exports.generateOTP = async (req, res) => {
               { $set: { otp: encryptedOTP } },
               async (error, ans) => {
                 if (error) {
-                  res.status(500).json({
+                  return res.status(500).json({
                     success,
                     error: "Some error occured",
                     message: "OTP not updated in db",
@@ -222,14 +215,14 @@ exports.generateOTP = async (req, res) => {
                 } else {
                   if (ans.modifiedCount === 1) {
                     const token = jwt.sign({ email: email }, JWT_SECRET);
-                    res.status(200).json({
+                    return res.status(200).json({
                       success: true,
                       token: token,
                       message:
                         "Password reset code successfully sent to your Email-id\nVerify your account",
                     });
                   } else
-                    res.status(500).json({
+                    return res.status(500).json({
                       success,
                       error: "Some internal error occured\nTry Again",
                       message: "OTP not updated in db",
@@ -240,7 +233,7 @@ exports.generateOTP = async (req, res) => {
           }
         });
       } else {
-        res.status(401).json({
+        return res.status(401).json({
           success,
           error:
             "This Email is not yet registered with RoomRover\nPlease Signup first",
@@ -299,7 +292,7 @@ exports.verifyOTP = async (req, res, next) => {
           { $set: { verified: true } },
           async (error, ans) => {
             if (error) {
-              res.status(500).json({
+              return res.status(500).json({
                 success,
                 error: "Some internal error occured\nTry Again",
                 message: `"verified" field not updated in db`,
@@ -308,13 +301,13 @@ exports.verifyOTP = async (req, res, next) => {
               // console.log(ans);
               if (ans.modifiedCount === 1) {
                 // const token = jwt.sign({ email: email }, JWT_SECRET);
-                res.status(200).json({
+                return res.status(200).json({
                   success: true,
                   // token: token,
                   message: "Account verified successfully ",
                 });
               } else
-                res.status(500).json({
+                return res.status(500).json({
                   success,
                   error: "Account verification is already done",
                   message: "Error",
@@ -331,7 +324,7 @@ exports.verifyOTP = async (req, res, next) => {
       });
     }
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       success,
       error: "Internal Server Error\nPlease try again.",
       message: error.message,
@@ -384,19 +377,19 @@ exports.updatePassword = async (req, res, next) => {
       },
       async (error, ans) => {
         if (error)
-          res.status(500).send({
-            success,
+          return res.status(500).send({
+            success: true,
             error: "Could not Update Password",
             message: error.message,
           });
         else {
           if (ans.modifiedCount === 1) {
-            res.status(200).send({
+            return res.status(200).send({
               success,
               message: "Password Updated Successfully",
             });
           } else {
-            res.status(500).send({
+            return res.status(500).send({
               success,
               error: "Could not Update Password\nSome Error Occured",
               message: "Password not updated in DB",
@@ -406,7 +399,7 @@ exports.updatePassword = async (req, res, next) => {
       }
     );
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       success,
       error: "Some internal error occured\nTry Again",
       message: error.message,
@@ -415,25 +408,3 @@ exports.updatePassword = async (req, res, next) => {
   }
 };
 
-/*
-const findUserBookings = async (userId) => {
-  const userBookings = await Booking.find({ user: userId })
-    .populate({
-      path: "room",
-      model: "Room",
-      populate: {
-        path: "building",
-        model: "Building",
-        select: "name location",
-        populate: {
-          path: "seller",
-          model: "Seller",
-          select: "name email",
-        },
-      },
-    })
-    .exec();
-
-  return userBookings;
-};
-*/

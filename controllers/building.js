@@ -39,7 +39,8 @@ exports.addBuilding = async (req, res, next) => {
           console.log(3);
           return res.status(409).json({
             success,
-            error: `Building already exists with name ${name} in ${city}`,
+            error: `You already have a building with name ${name} in ${city}`,
+            message: "Already Exists",
           });
         } else {
           console.log(4);
@@ -53,6 +54,7 @@ exports.addBuilding = async (req, res, next) => {
               description,
               price,
               roomCount,
+              available: roomCount,
               seller: new ObjectId(_id),
             },
             async (error, newBuilding) => {
@@ -66,43 +68,11 @@ exports.addBuilding = async (req, res, next) => {
                   message: error.message,
                 });
               } else {
-                console.log(7);
-                Seller.updateOne(
-                  {
-                    _id: _id,
-                  },
-                  {
-                    $push: { buildings: newBuilding._id },
-                  },
-                  async (error, ans) => {
-                    console.log(8);
-                    if (error)
-                      return res.status(500).json({
-                        success,
-                        error:
-                          "Building could not be added at moment\nSomething went wrong\nInternal Server Error",
-                        message: error.message,
-                      });
-                    else {
-                      console.log(8);
-                      if (ans.modifiedCount === 1) {
-                        console.log(9);
-                        res.status(200).json({
-                          message: "Building details successfully added.",
-                          ans,
-                        });
-                      } else {
-                        console.log(10);
-                        return res.status(500).json({
-                          success,
-                          error:
-                            "Building could not be added at moment\nSomething went wrong\nInternal Server Error",
-                          message: error.message,
-                        });
-                      }
-                    }
-                  }
-                );
+                // console.log(newBuilding);
+                return res.status(200).json({
+                  success: true,
+                  message: "Building details successfully added.",
+                });
               }
             }
           );
@@ -113,6 +83,97 @@ exports.addBuilding = async (req, res, next) => {
     return res.status(500).json({
       success,
       error: "Couldn't sign up\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteBuilding = async (req, res, next) => {
+  const { token, building_id } = req.body;
+  try {
+    const _id = jwt.verify(token, JWT_SECRET)._id;
+    console.log(_id);
+    Building.deleteOne(
+      {
+        _id: building_id,
+        seller: _id,
+      },
+      async (error, ans) => {
+        if (error) {
+          console.log(6);
+          return res.status(500).json({
+            success,
+            error:
+              "Building could not be deleted at moment\nSomething went wrong\nInternal Server Error",
+            message: error.message,
+          });
+        } else if (ans.deletedCount === 0) {
+          return res.status(400).json({
+            success,
+            error: "Building you are trying to delete does not exists.",
+            message: "Building not found in DB",
+            ans,
+          });
+        } else if (ans.deletedCount === 1) {
+          return res.status(200).json({
+            success: true,
+            message: "Building successfully deleted.",
+            ans,
+          });
+        } else {
+          console.log(6);
+          return res.status(500).json({
+            success,
+            error:
+              "Building could not be deleted at moment\nSomething went wrong\nInternal Server Error",
+            message: "Error",
+          });
+        }
+      }
+    );
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Building could not be deleted at moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
+
+exports.allCities_roomCount_minCost = async (req, res, next) => {
+  // const { token, building_id } = req.body;
+  try {
+    // const _id = jwt.verify(token, JWT_SECRET)._id;
+    // console.log(_id);
+    Building.aggregate([
+      {
+        $group: {
+          _id: "$city",
+          roomCount: { $sum: "$available" },
+          minCost: { $min: "$price" },
+        },
+      },
+    ]).exec((error, result) => {
+      if (error) {
+        return res.status(500).json({
+          success,
+          error:
+            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+          message: error.message,
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          data: result,
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
