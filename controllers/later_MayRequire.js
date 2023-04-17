@@ -37,7 +37,6 @@
   }
 );*/
 
-
 /*const findUserBookings = async (userId) => {
   const userBookings = await Booking.find({ user: userId })
     .populate({
@@ -58,4 +57,35 @@
 
   return userBookings;
 };
+*/
+
+
+/*
+const Building = require('./path/to/building/model');
+const User = require('./path/to/user/model');
+
+const seller_id = 'PUT_SELLER_ID_HERE';
+
+Building.find({ seller: seller_id })
+  .populate({
+    path: 'bookings',
+    model: 'Booking',
+    populate: {
+      path: 'user',
+      model: 'User',
+      select: 'name',
+    },
+  })
+  .exec((err, buildings) => {
+    if (err) {
+      console.log('Error:', err);
+    } else {
+      buildings.forEach(building => {
+        console.log('Building:', building.name);
+        building.bookings.forEach(booking => {
+          console.log('User:', booking.user.name);
+        });
+      });
+    }
+  });
 */
