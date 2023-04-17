@@ -1,6 +1,6 @@
 const  User = require("../models/user.model");
 const Booking = require("../models/booking.model");
-const Hotel = require("../models/hotel.model");
+const Building = require("../models/building.model");
 const Room = require("../models/room.model");
 const Seller = require("../models/seller.model");
 const success = false;
@@ -422,8 +422,8 @@ const findUserBookings = async (userId) => {
       path: "room",
       model: "Room",
       populate: {
-        path: "hotel",
-        model: "Hotel",
+        path: "building",
+        model: "Building",
         select: "name location",
         populate: {
           path: "seller",

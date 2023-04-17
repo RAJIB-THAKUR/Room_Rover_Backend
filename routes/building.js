@@ -1,18 +1,18 @@
 const express = require("express");
 const router = express.Router();
 
-const hotelValidator = require("../validators/hotel");
+const buildingValidator = require("../validators/building");
 const runValidation = require("../validators/validationResult");
-const hotelController = require("../controllers/hotel");
+const buildingController = require("../controllers/building");
 
 //-------------------------------------ROUTES-----------------------
 
-//ROUTE-1 : "addHotel"
+//ROUTE-1 : "addBuilding"
 router.post(
-  "/addHotel",
-  hotelValidator.addHotelValidator,
+  "/addBuilding",
+  buildingValidator.addBuildingValidator,
   runValidation,
-  hotelController.addHotel
+  buildingController.addBuilding
 );
 
 module.exports = router;

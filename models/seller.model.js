@@ -46,10 +46,10 @@ const sellerSchema = new mongoose.Schema({
       ref: "Booking",
     },
   ],
-  hotels: [
+  buildings: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Hotel",
+      ref: "Building",
     },
   ],
   createdAt: { type: Date, default: Date.now },
