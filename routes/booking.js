@@ -10,7 +10,7 @@ const bookingController = require("../controllers/booking");
 //ROUTE-1 : Book Room (Add into Bookings Collection)
 router.post("/bookRoom", bookingController.bookRoom);
 
-//ROUTE-1 : Cancel Booking
+//ROUTE-2 : Cancel Booking
 router.post("/cancelBooking", bookingController.cancelBooking);
 
 module.exports = router;
