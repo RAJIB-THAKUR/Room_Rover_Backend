@@ -33,22 +33,85 @@ exports.registerController = async (req, res, next) => {
   try {
     const oldUser_Same_Email = await UserSeller.findOne(
       { email },
-      { _id: 0, email: 1 }
+      { _id: 0, email: 1, verified: 1 }
     );
 
-    if (oldUser_Same_Email) {
+    if (oldUser_Same_Email && oldUser_Same_Email.verified === true) {
       return res.status(409).json({
         success,
         error: "User Already Exists with this email address",
       });
     }
+
+    const salt = await bcrypt.genSalt(parseInt(process.env.no_Of_Rounds));
+    const encryptedPassword = await bcrypt.hash(password, salt);
+
+    if (oldUser_Same_Email && oldUser_Same_Email.verified === false) {
+      await UserSeller.updateOne(
+        {
+          email: email,
+        },
+        {
+          $set: {
+            name,
+            mobile,
+            password: encryptedPassword,
+          },
+        }
+      );
+
+      mailOTP(email, "verifyAccount", (error, encryptedOTP) => {
+        if (error) {
+          console.error(error);
+          return res.status(500).json({
+            success,
+            error: "Failed to send account activation code",
+            message: error.message,
+          });
+        } else {
+          UserSeller.updateOne(
+            {
+              email: email,
+            },
+            { $set: { otp: encryptedOTP } },
+            async (error, ans) => {
+              if (error) {
+                return res.status(500).json({
+                  success,
+                  error: "Some error occured",
+                  message: "OTP not updated in db",
+                });
+              } else {
+                if (ans.modifiedCount === 1) {
+                  const token = jwt.sign({ email: email }, JWT_SECRET);
+                  return res.status(200).json({
+                    success: true,
+                    token: token,
+                    message:
+                      "Account activation code has been sent to your Email-id\nVerify your account to complete the registration process",
+                  });
+                } else
+                  return res.status(500).json({
+                    success,
+                    message: "Error",
+                    error: "Some internal error occured\nTry Again",
+                  });
+              }
+            }
+          );
+        }
+      });
+    }
+
     // console.log(2);
+
     const oldUser_Same_Mobile = await UserSeller.findOne(
       {
         mobile: mobile,
       },
       { _id: 0, mobile: 1 }
     );
+
     // console.log(3);
 
     if (oldUser_Same_Mobile) {
@@ -59,8 +122,6 @@ exports.registerController = async (req, res, next) => {
     }
 
     // console.log(4);
-    const salt = await bcrypt.genSalt(parseInt(process.env.no_Of_Rounds));
-    const encryptedPassword = await bcrypt.hash(password, salt);
 
     await UserSeller.create({
       name,
@@ -143,29 +204,29 @@ exports.loginController = async (req, res, next) => {
         error: "User with this email does not exist\nPlease Signup first",
       });
     }
+
     if (await bcrypt.compare(password, user.password)) {
       if (user.verified === false) {
-        const token = jwt.sign({ email: email }, JWT_SECRET);
         return res.status(401).json({
           success,
           error:
-            "User not verified yet\nVerify your account and try signing in",
-          token: token,
+            "User registration process has not been completed.\nGet yourself registered first.",
           message: "Unverified",
         });
+      } else {
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET);
+        return res.status(200).json({
+          success: true,
+          token: token,
+          message: "Successfully Logged In",
+        });
       }
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET);
-
-      return res.status(200).json({
-        success: true,
-        token: token,
-        message: "Successfully Logged In",
+    } else {
+      return res.status(401).json({
+        success,
+        error: "Invalid Password",
       });
     }
-    return res.status(401).json({
-      success,
-      error: "Invalid Password",
-    });
   } catch (error) {
     // console.log(error);
     return res.status(500).json({
@@ -176,6 +237,7 @@ exports.loginController = async (req, res, next) => {
   }
 };
 
+//Only for reset password
 exports.generateOTP = async (req, res) => {
   try {
     const { userSellerType, email } = req.body;
@@ -191,47 +253,56 @@ exports.generateOTP = async (req, res) => {
 
     UserSeller.findOne({ email: email }, async (err, user) => {
       if (user) {
-        mailOTP(email, "resetPswd", (error, encryptedOTP) => {
-          if (error) {
-            console.error(error);
-            return res.status(500).json({
-              success,
-              error: "Failed to send password reset code",
-              message: error.message,
-            });
-          } else {
-            UserSeller.updateOne(
-              {
-                email: email,
-              },
-              { $set: { otp: encryptedOTP } },
-              async (error, ans) => {
-                if (error) {
-                  return res.status(500).json({
-                    success,
-                    error: "Some error occured",
-                    message: "OTP not updated in db",
-                  });
-                } else {
-                  if (ans.modifiedCount === 1) {
-                    const token = jwt.sign({ email: email }, JWT_SECRET);
-                    return res.status(200).json({
-                      success: true,
-                      token: token,
-                      message:
-                        "Password reset code successfully sent to your Email-id\nVerify your account",
-                    });
-                  } else
+        if (user.verified === false) {
+          return res.status(401).json({
+            success,
+            error:
+              "User registration process has not been completed.\nGet yourself registered first.",
+            message: "Unverified",
+          });
+        } else {
+          mailOTP(email, "resetPswd", (error, encryptedOTP) => {
+            if (error) {
+              console.error(error);
+              return res.status(500).json({
+                success,
+                error: "Failed to send password reset code",
+                message: error.message,
+              });
+            } else {
+              UserSeller.updateOne(
+                {
+                  email: email,
+                },
+                { $set: { otp: encryptedOTP } },
+                async (error, ans) => {
+                  if (error) {
                     return res.status(500).json({
                       success,
-                      error: "Some internal error occured\nTry Again",
+                      error: "Some error occured",
                       message: "OTP not updated in db",
                     });
+                  } else {
+                    if (ans.modifiedCount === 1) {
+                      const token = jwt.sign({ email: email }, JWT_SECRET);
+                      return res.status(200).json({
+                        success: true,
+                        token: token,
+                        message:
+                          "Password reset code successfully sent to your Email-id\nVerify your account",
+                      });
+                    } else
+                      return res.status(500).json({
+                        success,
+                        error: "Some internal error occured\nTry Again",
+                        message: "OTP not updated in db",
+                      });
+                  }
                 }
-              }
-            );
-          }
-        });
+              );
+            }
+          });
+        }
       } else {
         return res.status(401).json({
           success,
@@ -274,17 +345,35 @@ exports.verifyOTP = async (req, res, next) => {
         message: "Error",
       });
     }
+
     // console.log(user);
     if (await bcrypt.compare(otp, user.otp)) {
       if (type === "resetPswd") {
-        return res.status(200).json({
-          success: true,
-          token: token,
-          message: "OTP verified successfully",
-        });
+        if (user.verified === false) {
+          return res.status(401).json({
+            success,
+            error:
+              "User registration process has not been completed.\nGet yourself registered first.",
+            message: "Unverified",
+          });
+        } else {
+          return res.status(200).json({
+            success: true,
+            token: token,
+            message: "OTP verified successfully",
+          });
+        }
       }
 
       if (type === "verifyAccount") {
+        if (user.verified === true) {
+          return res.status(500).json({
+            success,
+            error: "Account verification is already done",
+            message: "Error",
+          });
+        }
+
         UserSeller.updateOne(
           {
             _id: user._id,
@@ -300,17 +389,17 @@ exports.verifyOTP = async (req, res, next) => {
             } else {
               // console.log(ans);
               if (ans.modifiedCount === 1) {
-                // const token = jwt.sign({ email: email }, JWT_SECRET);
+                const token = jwt.sign({ email: email }, JWT_SECRET);
                 return res.status(200).json({
                   success: true,
-                  // token: token,
+                  token: token,
                   message: "Account verified successfully ",
                 });
               } else
-                return res.status(500).json({
+                return res.status(500).send({
                   success,
-                  error: "Account verification is already done",
-                  message: "Error",
+                  error: "Internal Server Error\nPlease try again.",
+                  message: error.message,
                 });
             }
           }
@@ -356,6 +445,14 @@ exports.updatePassword = async (req, res, next) => {
         success,
         error: "User with this email does not exist\nPlease Signup first",
         message: "Error",
+      });
+    }
+    if (user.verified === false) {
+      return res.status(401).json({
+        success,
+        error:
+          "User registration process has not been completed.\nGet yourself registered first.",
+        message: "Unverified",
       });
     }
     if (await bcrypt.compare(new_Password, user.password)) {

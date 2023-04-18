@@ -279,3 +279,8 @@ exports.seller_buildingDetails_type_City_Wise = async (req, res, next) => {
     });
   }
 };
+
+//all hotels---
+// type wise---sort
+//kolkata city ...building
+//type given...building
