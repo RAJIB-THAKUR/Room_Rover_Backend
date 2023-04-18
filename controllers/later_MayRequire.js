@@ -59,7 +59,6 @@
 };
 */
 
-
 /*
 const Building = require('./path/to/building/model');
 const User = require('./path/to/user/model');

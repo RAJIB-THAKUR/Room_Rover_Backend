@@ -323,7 +323,7 @@ exports.generateOTP = async (req, res) => {
 
 exports.verifyOTP = async (req, res, next) => {
   try {
-    const { userSellerType, token, otp, type } = req.body;
+    const { userSellerType, token, otp } = req.body;
 
     if (userSellerType === "user") UserSeller = User;
     else if (userSellerType === "seller") UserSeller = Seller;
@@ -336,7 +336,10 @@ exports.verifyOTP = async (req, res, next) => {
 
     const email = jwt.verify(token, JWT_SECRET).email;
 
-    const user = await UserSeller.findOne({ email: email }, { _id: 1, otp: 1 });
+    const user = await UserSeller.findOne(
+      { email: email },
+      { _id: 1, otp: 1, verified: 1 }
+    );
 
     if (!user) {
       return res.status(401).json({
@@ -348,32 +351,14 @@ exports.verifyOTP = async (req, res, next) => {
 
     // console.log(user);
     if (await bcrypt.compare(otp, user.otp)) {
-      if (type === "resetPswd") {
-        if (user.verified === false) {
-          return res.status(401).json({
-            success,
-            error:
-              "User registration process has not been completed.\nGet yourself registered first.",
-            message: "Unverified",
-          });
-        } else {
-          return res.status(200).json({
-            success: true,
-            token: token,
-            message: "OTP verified successfully",
-          });
-        }
+      if (user.verified === true) {
+        return res.status(200).json({
+          success: true,
+          token: token,
+          message: "OTP verified successfully",
+        });
       }
-
-      if (type === "verifyAccount") {
-        if (user.verified === true) {
-          return res.status(500).json({
-            success,
-            error: "Account verification is already done",
-            message: "Error",
-          });
-        }
-
+      if (user.verified === false)
         UserSeller.updateOne(
           {
             _id: user._id,
@@ -404,7 +389,6 @@ exports.verifyOTP = async (req, res, next) => {
             }
           }
         );
-      }
     } else {
       return res.status(401).json({
         success,
@@ -504,3 +488,5 @@ exports.updatePassword = async (req, res, next) => {
     // console.log(error);
   }
 };
+
+//verified : false--->no forgot pswd

@@ -40,12 +40,12 @@ const sellerSchema = new mongoose.Schema({
   //     ref: "Room",
   //   },
   // ],
-  bookings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
-    },
-  ],
+  // bookings: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Booking",
+  //   },
+  // ],
   // buildings: [
   //   {
   //     type: mongoose.Schema.Types.ObjectId,

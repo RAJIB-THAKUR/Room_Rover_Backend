@@ -64,12 +64,12 @@ const buildingSchema = new mongoose.Schema({
     ref: "Seller",
     required: true,
   },
-  bookings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
-    },
-  ],
+  // bookings: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Booking",
+  //   },
+  // ],
 });
 
 const Building = mongoose.model("Building", buildingSchema);

@@ -44,12 +44,12 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: "##########",
   },
-  bookings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
-    },
-  ],
+  // bookings: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Booking",
+  //   },
+  // ],
   createdAt: { type: Date, default: Date.now },
   // prof_Pic: { type: String },
 });

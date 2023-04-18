@@ -11,6 +11,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const ObjectId = require("mongodb").ObjectId;
 
+//ROUTE-1 contoller
 exports.addBuilding = async (req, res, next) => {
   const {
     token,
@@ -88,6 +89,7 @@ exports.addBuilding = async (req, res, next) => {
   }
 };
 
+//ROUTE-2 contoller
 exports.deleteBuilding = async (req, res, next) => {
   const { token, building_id } = req.body;
   try {
@@ -141,6 +143,7 @@ exports.deleteBuilding = async (req, res, next) => {
   }
 };
 
+//ROUTE-3 contoller --- for Bisu
 exports.allCities_roomCount_minCost = async (req, res, next) => {
   // const { token, building_id } = req.body;
   try {
@@ -154,6 +157,7 @@ exports.allCities_roomCount_minCost = async (req, res, next) => {
           minCost: { $min: "$price" },
         },
       },
+      { $sort: { _id: 1 } },
     ]).exec((error, result) => {
       if (error) {
         return res.status(500).json({
@@ -179,6 +183,105 @@ exports.allCities_roomCount_minCost = async (req, res, next) => {
   }
 };
 
+//ROUTE-4 contoller --- for Bisu
+exports.allBuildingTypes_roomCount_minCost = async (req, res, next) => {
+  // const { token, building_id } = req.body;
+  try {
+    // const _id = jwt.verify(token, JWT_SECRET)._id;
+    // console.log(_id);
+    Building.aggregate([
+      {
+        $group: {
+          _id: "$buildingType",
+          roomCount: { $sum: "$available" },
+          minCost: { $min: "$price" },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]).exec((error, result) => {
+      if (error) {
+        return res.status(500).json({
+          success,
+          error:
+            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+          message: error.message,
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          data: result,
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
+
+
+//ROUTE-5 contoller --- for Bisu
+//Common API you can provide any or all fields in body out of 3 (seller_id as token,city,buildingType)
+exports.buildingDetails_seller_type_City = async (req, res, next) => {
+  const { token, city, buildingType } = req.body;
+  try {
+    const match = {
+      // seller: new ObjectId(_id),
+    };
+    if (token) {
+      const _id = jwt.verify(token, JWT_SECRET)._id;
+      match.seller = new ObjectId(_id);
+    }
+    if (city) {
+      match.city = city;
+    }
+    if (buildingType) {
+      match.buildingType = buildingType;
+    }
+
+    Building.aggregate([
+      {
+        $match: match,
+      },
+      // {
+      //   $project: {
+      //     name: 1,
+      //     address: 1,
+      //     buildingType: 1,
+      //     price: 1,
+      //     roomCount: 1,
+      //   },
+      // },
+    ]).exec((error, result) => {
+      if (error) {
+        return res.status(500).json({
+          success,
+          error:
+            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+          message: error.message,
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          data: result,
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
+
+//Filhal not using
 exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
   const { token } = req.body;
   try {
@@ -202,59 +305,6 @@ exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
           },
         },
       },
-    ]).exec((error, result) => {
-      if (error) {
-        return res.status(500).json({
-          success,
-          error:
-            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
-          message: error.message,
-        });
-      } else {
-        return res.status(200).json({
-          success: true,
-          data: result,
-        });
-      }
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success,
-      error:
-        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
-      message: error.message,
-    });
-  }
-};
-
-exports.seller_buildingDetails_type_City_Wise = async (req, res, next) => {
-  const { token, city, buildingType } = req.body;
-  try {
-    const _id = jwt.verify(token, JWT_SECRET)._id;
-    // console.log(_id);
-    const match = {
-      seller: new ObjectId(_id),
-    };
-    if (city) {
-      match.city = city;
-    }
-    if (buildingType) {
-      match.buildingType = buildingType;
-    }
-
-    Building.aggregate([
-      {
-        $match: match,
-      },
-      // {
-      //   $project: {
-      //     name: 1,
-      //     address: 1,
-      //     buildingType: 1,
-      //     price: 1,
-      //     roomCount: 1,
-      //   },
-      // },
     ]).exec((error, result) => {
       if (error) {
         return res.status(500).json({

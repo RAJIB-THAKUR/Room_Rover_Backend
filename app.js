@@ -14,6 +14,8 @@ app.use(cors());
 //-----------ROUTES-----------
 app.use("/api", require("./routes/auth"));
 app.use("/api", require("./routes/building"));
+app.use("/api", require("./routes/seller"));
+app.use("/api", require("./routes/booking"));
 
 //-----------Server-----------
 const PORT = process.env.PORT || 7000;
