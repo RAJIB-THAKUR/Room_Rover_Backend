@@ -44,7 +44,7 @@ exports.verifyOTPValidator = [
 
   check("otp")
     .isLength({ min: 4, max: 4 })
-    .withMessage("Password must be of 4 digits only"),
+    .withMessage("OTP must be of 4 digits only"),
 
   // check("type")
   //   .matches(/^(resetPswd|verifyAccount)$/i)

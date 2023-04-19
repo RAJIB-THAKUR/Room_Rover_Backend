@@ -55,14 +55,8 @@ exports.registerController = async (req, res, next) => {
         },
         { _id: 0, mobile: 1, email: 1 }
       );
-      // return res.status(409).json({
-      //   success,
-      //   oldUser_Same_Mobile:oldUser_Same_Mobile[0],
-      //   error: "User Already Exists with this Mobile",
-      // });
-      // console.log(oldUser_Same_Mobile);
-      // console.log(oldUser_Same_Email.email);
-      //if New Number is registered with someone else
+
+      //if new obile number is registered with someone else
       if (
         oldUser_Same_Mobile &&
         oldUser_Same_Mobile.email !== oldUser_Same_Email.email
@@ -72,9 +66,7 @@ exports.registerController = async (req, res, next) => {
           success,
           error: "User Already Exists with this Mobile",
         });
-      }
-      // console.log(mobile);
-      else {
+      } else {
         await UserSeller.updateOne(
           {
             email: email,
@@ -451,7 +443,7 @@ exports.updatePassword = async (req, res, next) => {
 
     const user = await UserSeller.findOne(
       { email: email },
-      { _id: 0, password: 1 }
+      { _id: 0, password: 1, verified: 1 }
     );
     if (!user) {
       return res.status(401).json({
