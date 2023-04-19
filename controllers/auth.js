@@ -510,4 +510,3 @@ exports.updatePassword = async (req, res, next) => {
   }
 };
 
-//verified : false--->no forgot pswd
