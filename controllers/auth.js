@@ -47,130 +47,159 @@ exports.registerController = async (req, res, next) => {
     const encryptedPassword = await bcrypt.hash(password, salt);
 
     if (oldUser_Same_Email && oldUser_Same_Email.verified === false) {
-      await UserSeller.updateOne(
+      console.log(1211);
+      //TO ENSURE THAT NEW MOBILE IS NOT REGISTERED WITH SOMEONE ELSE
+      const oldUser_Same_Mobile = await UserSeller.findOne(
         {
-          email: email,
+          mobile: mobile,
         },
-        {
-          $set: {
-            name,
-            mobile,
-            password: encryptedPassword,
-          },
-        }
+        { _id: 0, mobile: 1, email: 1 }
       );
-
-      mailOTP(email, "verifyAccount", (error, encryptedOTP) => {
-        if (error) {
-          console.error(error);
-          return res.status(500).json({
-            success,
-            error: "Failed to send account activation code",
-            message: error.message,
-          });
-        } else {
-          UserSeller.updateOne(
-            {
-              email: email,
-            },
-            { $set: { otp: encryptedOTP } },
-            async (error, ans) => {
-              if (error) {
-                return res.status(500).json({
-                  success,
-                  error: "Some error occured",
-                  message: "OTP not updated in db",
-                });
-              } else {
-                if (ans.modifiedCount === 1) {
-                  const token = jwt.sign({ email: email }, JWT_SECRET);
-                  return res.status(200).json({
-                    success: true,
-                    token: token,
-                    message:
-                      "Account activation code has been sent to your Email-id\nVerify your account to complete the registration process",
-                  });
-                } else
-                  return res.status(500).json({
-                    success,
-                    message: "Error",
-                    error: "Some internal error occured\nTry Again",
-                  });
-              }
-            }
-          );
-        }
-      });
-    }
-
-    // console.log(2);
-
-    const oldUser_Same_Mobile = await UserSeller.findOne(
-      {
-        mobile: mobile,
-      },
-      { _id: 0, mobile: 1 }
-    );
-
-    // console.log(3);
-
-    if (oldUser_Same_Mobile) {
-      return res.status(409).json({
-        success,
-        error: "User Already Exists with this Mobile",
-      });
-    }
-
-    // console.log(4);
-
-    await UserSeller.create({
-      name,
-      email,
-      mobile,
-      password: encryptedPassword,
-    });
-
-    mailOTP(email, "verifyAccount", (error, encryptedOTP) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).json({
+      // return res.status(409).json({
+      //   success,
+      //   oldUser_Same_Mobile:oldUser_Same_Mobile[0],
+      //   error: "User Already Exists with this Mobile",
+      // });
+      // console.log(oldUser_Same_Mobile);
+      // console.log(oldUser_Same_Email.email);
+      //if New Number is registered with someone else
+      if (
+        oldUser_Same_Mobile &&
+        oldUser_Same_Mobile.email !== oldUser_Same_Email.email
+      ) {
+        console.log("Hiii");
+        return res.status(409).json({
           success,
-          error: "Failed to send account activation code",
-          message: error.message,
+          error: "User Already Exists with this Mobile",
         });
-      } else {
-        UserSeller.updateOne(
+      }
+      // console.log(mobile);
+      else {
+        await UserSeller.updateOne(
           {
             email: email,
           },
-          { $set: { otp: encryptedOTP } },
-          async (error, ans) => {
-            if (error) {
-              return res.status(500).json({
-                success,
-                error: "Some error occured",
-                message: "OTP not updated in db",
-              });
-            } else {
-              if (ans.modifiedCount === 1) {
-                const token = jwt.sign({ email: email }, JWT_SECRET);
-                return res.status(200).json({
-                  success: true,
-                  token: token,
-                  message:
-                    "Account activation code has been sent to your Email-id\nVerify your account to complete the registration process",
-                });
-              } else
-                return res.status(500).json({
-                  success,
-                  message: "Error",
-                  error: "Some internal error occured\nTry Again",
-                });
-            }
+          {
+            name,
+            mobile,
+            password: encryptedPassword,
           }
         );
+
+        mailOTP(email, "verifyAccount", (error, encryptedOTP) => {
+          if (error) {
+            console.error(error);
+            return res.status(500).json({
+              success,
+              error: "Failed to send account activation code",
+              message: error.message,
+            });
+          } else {
+            UserSeller.updateOne(
+              {
+                email: email,
+              },
+              { $set: { otp: encryptedOTP } },
+              async (error, ans) => {
+                if (error) {
+                  return res.status(500).json({
+                    success,
+                    error: "Some error occured",
+                    message: "OTP not updated in db",
+                  });
+                } else {
+                  if (ans.modifiedCount === 1) {
+                    const token = jwt.sign({ email: email }, JWT_SECRET);
+                    return res.status(200).json({
+                      success: true,
+                      token: token,
+                      message:
+                        "Account activation code has been sent to your Email-id\nVerify your account to complete the registration process",
+                    });
+                  } else
+                    return res.status(500).json({
+                      success,
+                      message: "Error",
+                      error: "Some internal error occured\nTry Again",
+                    });
+                }
+              }
+            );
+          }
+        });
       }
-    });
+    }
+
+    // console.log(2);
+    else {
+      const oldUser_Same_Mobile = await UserSeller.findOne(
+        {
+          mobile: mobile,
+        },
+        { _id: 0, mobile: 1 }
+      );
+
+      console.log(31);
+
+      if (oldUser_Same_Mobile) {
+        return res.status(409).json({
+          success,
+          error: "User Already Exists with this Mobile",
+        });
+      }
+
+      // console.log(4);
+      else {
+        await UserSeller.create({
+          name,
+          email,
+          mobile,
+          password: encryptedPassword,
+        });
+        console.log(4);
+        mailOTP(email, "verifyAccount", (error, encryptedOTP) => {
+          if (error) {
+            console.error(error);
+            return res.status(500).json({
+              success,
+              error: "Failed to send account activation code",
+              message: error.message,
+            });
+          } else {
+            UserSeller.updateOne(
+              {
+                email: email,
+              },
+              { $set: { otp: encryptedOTP } },
+              async (error, ans) => {
+                if (error) {
+                  return res.status(500).json({
+                    success,
+                    error: "Some error occured",
+                    message: "OTP not updated in db",
+                  });
+                } else {
+                  if (ans.modifiedCount === 1) {
+                    const token = jwt.sign({ email: email }, JWT_SECRET);
+                    return res.status(200).json({
+                      success: true,
+                      token: token,
+                      message:
+                        "Account activation code has been sent to your Email-id\nVerify your account to complete the registration process",
+                    });
+                  } else
+                    return res.status(500).json({
+                      success,
+                      message: "Error",
+                      error: "Some internal error occured\nTry Again",
+                    });
+                }
+              }
+            );
+          }
+        });
+      }
+    }
   } catch (error) {
     return res.status(500).json({
       success,
