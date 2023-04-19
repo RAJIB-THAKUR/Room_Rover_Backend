@@ -46,9 +46,9 @@ exports.verifyOTPValidator = [
     .isLength({ min: 4, max: 4 })
     .withMessage("Password must be of 4 digits only"),
 
-  check("type")
-    .matches(/^(resetPswd|verifyAccount)$/i)
-    .withMessage(`User Seller Type must be either "user" or "seller"`),
+  // check("type")
+  //   .matches(/^(resetPswd|verifyAccount)$/i)
+  //   .withMessage(`User Seller Type must be either "user" or "seller"`),
 ];
 
 exports.updatePasswordValidator = [
