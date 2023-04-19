@@ -24,7 +24,7 @@ router.post(
 );
 
 //Route-3: OTP generation - Forgotten Password Feature
-router.post(
+router.put(
   "/generateOTP",
   authValidator.generateOTPValidator,
   runValidation,
@@ -40,7 +40,7 @@ router.post(
 );
 
 //Route-5: Update Password - Forgotten Password Feature
-router.post(
+router.put(
   "/updatePassword",
   authValidator.updatePasswordValidator,
   runValidation,

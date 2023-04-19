@@ -11,6 +11,6 @@ const bookingController = require("../controllers/booking");
 router.post("/bookRoom", bookingController.bookRoom);
 
 //ROUTE-2 : Cancel Booking
-router.post("/cancelBooking", bookingController.cancelBooking);
+router.put("/cancelBooking", bookingController.cancelBooking);
 
 module.exports = router;
