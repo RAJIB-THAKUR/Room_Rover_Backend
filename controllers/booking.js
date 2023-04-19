@@ -26,6 +26,51 @@ exports.bookRoom = async (req, res, next) => {
 
     const _id = jwt.verify(token, JWT_SECRET)._id;
 
+    const user = await User.findOne({ _id: _id }, { _id: 1 });
+
+    if (!user) {
+      return res.status(404).json({
+        success,
+        error:
+          "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+        message: "User not available for provided token(user_id)",
+      });
+    }
+
+    const seller = await Seller.findOne({ _id: seller_id }, { _id: 1 });
+
+    if (!seller) {
+      return res.status(404).json({
+        success,
+        error:
+          "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+        message: "Seller not available for provided seller_id",
+      });
+    }
+
+    const building = await Building.findOne(
+      { _id: building_id },
+      { _id: 1, available: 1, booked: 1 }
+    );
+
+    if (!building) {
+      return res.status(404).json({
+        success,
+        error:
+          "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+        message: "building not available for provided building_id",
+      });
+    }
+
+    if (building.available === 0) {
+      return res.status(404).json({
+        success,
+        error: "Booking cannot be done at moment\nNo rooms are available.",
+        message: "building's available roomCount=0",
+      });
+    }
+
+    // Check if user has already booked in this building
     Booking.findOne(
       { user: _id, seller: seller_id, building: building_id, status: "booked" },
       async (error, booking) => {
@@ -45,59 +90,48 @@ exports.bookRoom = async (req, res, next) => {
             message: error.message,
           });
         } else {
-          const result = await Booking.create({
+          //Creating Booking
+          await Booking.create({
             user: _id,
             seller: seller_id,
             building: building_id,
             status: "booked",
           });
           console.log(11);
-          const building = await Building.findOne({ _id: building_id });
-          console.log(12);
 
-          if (building) {
-            console.log(13);
-            Building.updateOne(
-              {
-                _id: building_id,
-              },
-              {
-                booked: building.booked + 1,
-                available: building.available - 1,
-              },
-              async (error, ans) => {
-                if (error) {
-                  return res.status(500).json({
-                    success,
-                    error:
-                      "iBooking cannot be done at moment\nSomething went wrong\nInternal Server Error",
-                    message: error.message,
-                  });
-                } else if (ans.modifiedCount === 1) {
-                  return res.status(200).json({
-                    success: true,
-                    message: "Your booking has been successfully done.",
-                  });
-                } else {
-                  return res.status(500).json({
-                    success,
-                    error:
-                      "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
-                    message:
-                      "Building collection's available & booked fields not updated",
-                  });
-                }
+          // Updating booked and available fields
+          Building.updateOne(
+            {
+              _id: building_id,
+            },
+            {
+              booked: building.booked + 1,
+              available: building.available - 1,
+            },
+            async (error, ans) => {
+              if (error) {
+                return res.status(500).json({
+                  success,
+                  error:
+                    "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+                  message: error.message,
+                });
+              } else if (ans.modifiedCount === 1) {
+                return res.status(200).json({
+                  success: true,
+                  message: "Your booking has been successfully done.",
+                });
+              } else {
+                return res.status(500).json({
+                  success,
+                  error:
+                    "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+                  message:
+                    "Building collection's available & booked fields not updated",
+                });
               }
-            );
-          } else {
-            return res.status(500).json({
-              success,
-              error:
-                "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
-              message:
-                "Building collection's available & booked fields not updated",
-            });
-          }
+            }
+          );
         }
       }
     );
@@ -127,6 +161,17 @@ exports.cancelBooking = async (req, res, next) => {
 
     const _id = jwt.verify(token, JWT_SECRET)._id;
 
+    const user = await User.findOne({ _id: _id }, { _id: 1 });
+
+    if (!user) {
+      return res.status(404).json({
+        success,
+        error:
+          "Booking cannot be cancelled at moment\nSomething went wrong\nInternal Server Error",
+        message: "User not available for provided token(user_id)",
+      });
+    }
+
     const booking = await Booking.findOne({ _id: booking_id, user: _id });
 
     if (!booking) {
@@ -136,6 +181,7 @@ exports.cancelBooking = async (req, res, next) => {
         message: "Not Found",
       });
     }
+
     if (booking.status !== "booked") {
       return res.status(400).json({
         success: false,
@@ -161,7 +207,9 @@ exports.cancelBooking = async (req, res, next) => {
           });
         } else if (ans.modifiedCount === 1) {
           const building_id = booking.building;
+
           const building = await Building.findOne({ _id: building_id });
+
           console.log(12);
 
           if (building) {
