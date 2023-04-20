@@ -279,7 +279,7 @@ exports.cancelBooking = async (req, res, next) => {
   }
 };
 
-//ROUTE-3 conmtroller
+//ROUTE-3 controller
 //user is checked out by seller
 exports.checkOut_User = async (req, res, next) => {
   const { token, booking_id } = req.body;

@@ -16,7 +16,7 @@ router.post(
 );
 
 //ROUTE-2 : "deleteBuilding"
-router.post("/deleteBuilding", buildingController.deleteBuilding);
+router.delete("/deleteBuilding", buildingController.deleteBuilding);
 
 //ROUTE-3 : All City wise room counts & minimum cost
 router.get(

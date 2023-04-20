@@ -64,7 +64,7 @@ exports.user_booking_Details = async (req, res, next) => {
   }
 };
 
-//Route-1 controller
+//Route-2 controller
 //user gets details of building with building_id
 exports.user_building_Details = async (req, res, next) => {
   const { token, building_id } = req.body;
