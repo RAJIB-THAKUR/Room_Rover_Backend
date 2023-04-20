@@ -31,16 +31,17 @@ const mailOTP = async (email, type, callback) => {
     msg = {
       from: process.env.room_Rover_Email_ID,
       to: email,
-      subject: `RoomRover account verification code`,
+      subject: `Complete your registration process at RoomRover !
+      `,
       html: `
     <p>
       Hiii ${email},
       <br><br>
-      RoomRover welcomes you as the new member of this big family.
-      <br>
+      Thank you for becoming a part of the RoomRover community. RoomRover welcomes you as the new member of this big family.
+      <br>     
       Kindly do verify your account within 24 hours to complete your registration process.
       <br><br>
-      Enter the following account verification code:
+      Enter the following account verification code to verify your account :
       <br><br>
       <b>${otp}</b>
       <br><br>
@@ -48,7 +49,7 @@ const mailOTP = async (email, type, callback) => {
     </p>`,
     };
   } else {
-    return callback("Some error occurred");
+    return callback("type is not equal to *resetPswd* or *verifyAccount*");
   }
 
   nodemailer

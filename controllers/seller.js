@@ -65,3 +65,47 @@ exports.seller_buildingDetails_type_City = async (req, res, next) => {
     });
   }
 };
+
+//Route-2 controller
+//details of users for particular seller 
+exports.seller_booking_Details = async (req, res, next) => {
+  const { token, building_id, status } = req.body;
+  try {
+    const _id = jwt.verify(token, JWT_SECRET)._id;
+    const match = { seller: _id };
+    if (building_id) {
+      match.building = building_id;
+    }
+    if (status) {
+      match.status = status;
+    }
+    Booking.find(match, { _id: 1, status: 1 })
+      .populate({
+        path: "user",
+        model: "user",
+        select: "_id name mobile email address",
+      })
+      .exec((error, result) => {
+        if (error) {
+          return res.status(500).json({
+            success,
+            error:
+              "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+            message: error.message,
+          });
+        } else {
+          return res.status(200).json({
+            success: true,
+            data: result,
+          });
+        }
+      });
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};

@@ -23,6 +23,7 @@ const bookingSchema = new mongoose.Schema({
     // enum: ["booked", "checkedIn", "checkedOut", "cancelled"],
     default: "booked",
   },
+  createdAt: { type: Date, default: Date.now },
   // room: {
   //   type: mongoose.Schema.Types.ObjectId,
   //   ref: "Room",

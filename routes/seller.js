@@ -12,4 +12,6 @@ router.post(
   sellerController.seller_buildingDetails_type_City
 );
 
+router.post("/booking_Details", sellerController.seller_booking_Details);
+
 module.exports = router;
