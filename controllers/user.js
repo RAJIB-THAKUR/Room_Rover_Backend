@@ -19,20 +19,20 @@ exports.user_booking_Details = async (req, res, next) => {
     const _id = jwt.verify(token, JWT_SECRET)._id;
 
     Booking.find({ user: _id }, { _id: 1, status: 1 })
-      .populate({
-        path: "user",
-        model: "user",
-        select: "_id name mobile email address",
-      })
-      .populate({
-        path: "seller",
-        model: "Seller",
-        select: "_id name mobile email address",
-      })
+      //   .populate({
+      //     path: "user",
+      //     model: "user",
+      //     select: "_id name mobile email address",
+      //   })
+      //   .populate({
+      //     path: "seller",
+      //     model: "Seller",
+      //     select: " name mobile email address",
+      //   })
       .populate({
         path: "building",
         model: "Building",
-        select: "_id name city address mobile buildingType description price",
+        select: "_id name city address mobile buildingType price",
         // populate: {
         //   path: "seller",
         //   model: "Seller",

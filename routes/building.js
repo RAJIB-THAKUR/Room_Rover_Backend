@@ -30,10 +30,10 @@ router.get(
   buildingController.allBuildingTypes_roomCount_minCost
 );
 
-//ROUTE-5 : All Building details for seller/city/buildingType all optional wise
+//ROUTE-5 :All Building details(Provide city or buildingType or both)
 router.get(
-  "/buildingDetails_seller_type_City",
-  buildingController.buildingDetails_seller_type_City
+  "/buildingDetails_Type_City_wise",
+  buildingController.buildingDetails_Type_City_wise
 );
 
 module.exports = router;

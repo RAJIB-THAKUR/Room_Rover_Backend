@@ -30,7 +30,7 @@ exports.addBuilding = async (req, res, next) => {
     console.log(1);
     Building.findOne(
       {
-        seller: new ObjectId(_id),
+        seller: _id,
         name: name,
         city: city,
       },
@@ -223,19 +223,13 @@ exports.allBuildingTypes_roomCount_minCost = async (req, res, next) => {
   }
 };
 
-
 //ROUTE-5 contoller --- for Bisu
-//Common API you can provide any or all fields in body out of 3 (seller_id as token,city,buildingType)
-exports.buildingDetails_seller_type_City = async (req, res, next) => {
+//You can provide any or all fields in body out of 2 (city,buildingType)
+exports.buildingDetails_Type_City_wise = async (req, res, next) => {
   const { token, city, buildingType } = req.body;
   try {
-    const match = {
-      // seller: new ObjectId(_id),
-    };
-    if (token) {
-      const _id = jwt.verify(token, JWT_SECRET)._id;
-      match.seller = new ObjectId(_id);
-    }
+    const match = {};
+
     if (city) {
       match.city = city;
     }
