@@ -56,7 +56,7 @@ exports.addBuilding = async (req, res, next) => {
               price,
               roomCount,
               available: roomCount,
-              seller: new ObjectId(_id),
+              seller: _id,
             },
             async (error, newBuilding) => {
               console.log(5);

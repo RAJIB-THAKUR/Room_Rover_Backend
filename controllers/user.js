@@ -65,7 +65,7 @@ exports.user_booking_Details = async (req, res, next) => {
 };
 
 //Route-1 controller
-//details of user's all booking Details
+//details of building with building
 exports.user_building_Details = async (req, res, next) => {
   const { token, building_id } = req.body;
   try {
