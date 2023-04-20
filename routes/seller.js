@@ -14,4 +14,10 @@ router.get(
 //ROUTE:2 : seller can get Details of users in particular building
 router.get("/booking_Details", sellerController.seller_booking_Details);
 
+//ROUTE:3 : seller can update RoomCount in particular building
+router.put(
+  "/seller_update_RoomCount",
+  sellerController.seller_update_RoomCount
+);
+
 module.exports = router;

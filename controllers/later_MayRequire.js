@@ -13,7 +13,7 @@
       return res.status(500).json({
         success,
         error:
-          "Building could not be added at moment\nSomething went wrong\nInternal Server Error",
+          "Building could not be added at this moment\nSomething went wrong\nInternal Server Error",
         message: error.message,
       });
     else {
@@ -29,7 +29,7 @@
         return res.status(500).json({
           success,
           error:
-            "Building could not be added at moment\nSomething went wrong\nInternal Server Error",
+            "Building could not be added at this moment\nSomething went wrong\nInternal Server Error",
           message: "Error",
         });
       }

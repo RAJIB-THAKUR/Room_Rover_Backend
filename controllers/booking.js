@@ -20,7 +20,7 @@ exports.bookRoom = async (req, res, next) => {
       return res.status(500).json({
         success,
         error:
-          "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+          "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
         message: "token, seller_id or building_id is not provided",
       });
 
@@ -32,7 +32,7 @@ exports.bookRoom = async (req, res, next) => {
       return res.status(404).json({
         success,
         error:
-          "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+          "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
         message: "User not available for provided token(user_id)",
       });
     }
@@ -43,7 +43,7 @@ exports.bookRoom = async (req, res, next) => {
       return res.status(404).json({
         success,
         error:
-          "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+          "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
         message: "Seller not available for provided seller_id",
       });
     }
@@ -57,7 +57,7 @@ exports.bookRoom = async (req, res, next) => {
       return res.status(404).json({
         success,
         error:
-          "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+          "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
         message: "building not available for provided building_id",
       });
     }
@@ -65,7 +65,7 @@ exports.bookRoom = async (req, res, next) => {
     if (building.available === 0) {
       return res.status(404).json({
         success,
-        error: "Booking cannot be done at moment\nNo rooms are available.",
+        error: "Booking cannot be done at this moment\nNo rooms are available.",
         message: "building's available roomCount=0",
       });
     }
@@ -86,7 +86,7 @@ exports.bookRoom = async (req, res, next) => {
           return res.status(500).json({
             success,
             error:
-              "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+              "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
             message: error.message,
           });
         } else {
@@ -113,7 +113,7 @@ exports.bookRoom = async (req, res, next) => {
                 return res.status(500).json({
                   success,
                   error:
-                    "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+                    "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
                   message: error.message,
                 });
               } else if (ans.modifiedCount === 1) {
@@ -125,7 +125,7 @@ exports.bookRoom = async (req, res, next) => {
                 return res.status(500).json({
                   success,
                   error:
-                    "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+                    "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
                   message:
                     "Building collection's available & booked fields not updated",
                 });
@@ -139,7 +139,7 @@ exports.bookRoom = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+        "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
@@ -167,7 +167,7 @@ exports.cancelBooking = async (req, res, next) => {
       return res.status(404).json({
         success,
         error:
-          "Booking cannot be cancelled at moment\nSomething went wrong\nInternal Server Error",
+          "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
         message: "User not available for provided token(user_id)",
       });
     }
@@ -202,7 +202,7 @@ exports.cancelBooking = async (req, res, next) => {
           return res.status(500).json({
             success,
             error:
-              "Booking cannot be cancelled at moment\nSomething went wrong\nInternal Server Error",
+              "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
             message: error.message,
           });
         } else if (ans.modifiedCount === 1) {
@@ -227,7 +227,7 @@ exports.cancelBooking = async (req, res, next) => {
                   return res.status(500).json({
                     success,
                     error:
-                      "Booking cannot be cancelled at moment\nSomething went wrong\nInternal Server Error",
+                      "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
                     message: error.message,
                     message2:
                       "Building collection's available & booked fields not updated",
@@ -241,7 +241,7 @@ exports.cancelBooking = async (req, res, next) => {
                   return res.status(500).json({
                     success,
                     error:
-                      "Booking cannot be cancelled at moment\nSomething went wrong\nInternal Server Error",
+                      "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
                     message:
                       "Building collection's available & booked fields not updated",
                   });
@@ -252,7 +252,7 @@ exports.cancelBooking = async (req, res, next) => {
             return res.status(500).json({
               success,
               error:
-                "Booking cannot be cancelled at moment\nSomething went wrong\nInternal Server Error",
+                "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
               message:
                 "Building collection's available & booked fields not updated",
               message2:
@@ -263,7 +263,7 @@ exports.cancelBooking = async (req, res, next) => {
           return res.status(500).json({
             success,
             error:
-              "Booking cannot be cancelled at moment\nSomething went wrong\nInternal Server Error",
+              "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
             message: "Unknown Error",
           });
         }
@@ -273,7 +273,144 @@ exports.cancelBooking = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Booking cannot be cancelled at moment\nSomething went wrong\nInternal Server Error",
+        "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
+
+//ROUTE-3 conmtroller
+//user is checked out by seller
+exports.checkOut_User = async (req, res, next) => {
+  const { token, booking_id } = req.body;
+  try {
+    if (!token || !booking_id) {
+      return res.status(500).json({
+        success,
+        error:
+          "User cannot be checked out at the moment\nSomething went wrong\nInternal Server Error",
+        message: "token or booking_id is not provided",
+      });
+    }
+
+    const _id = jwt.verify(token, JWT_SECRET)._id;
+
+    const seller = await Seller.findOne({ _id: _id }, { _id: 1 });
+
+    if (!seller) {
+      return res.status(404).json({
+        success,
+        error:
+          "User cannot be checked out at the moment\nSomething went wrong\nInternal Server Error",
+        message: "Seller not available for provided token(user_id)",
+      });
+    }
+
+    const booking = await Booking.findOne({ _id: booking_id, seller: _id });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        error: "Booking not found.",
+        message: "Not Found",
+      });
+    }
+
+    if (booking.status !== "booked") {
+      return res.status(400).json({
+        success: false,
+        error:
+          "User cannot be checked out at the moment\nas it has already been cancelled or checked out.",
+        message: `Booking status is not equal to 'booked'.`,
+      });
+    }
+
+    const building_id = booking.building;
+
+    const building = await Building.findOne({ _id: building_id });
+    if (!building) {
+      return res.status(404).json({
+        success,
+        error:
+          "User cannot be checked out at the moment\nSomething went wrong\nInternal Server Error",
+        message: "Building not available for provided building_id.",
+      });
+    }
+    if (building.booked < 1) {
+      return res.status(400).json({
+        success,
+        error:
+          "User cannot be checked out at the moment\nSomething went wrong\nInternal Server Error",
+        message: `Building's booked count < 1`,
+      });
+    }
+
+    Booking.updateOne(
+      {
+        _id: booking_id,
+        seller: _id,
+      },
+      { status: "checkedOut" },
+      async (error, ans) => {
+        if (error) {
+          return res.status(500).json({
+            success,
+            error:
+              "User cannot be checked out at the moment\nSomething went wrong\nInternal Server Error",
+            message: error.message,
+          });
+        } else if (ans.modifiedCount === 1) {
+          console.log(12);
+
+          Building.updateOne(
+            {
+              _id: building_id,
+            },
+            {
+              booked: building.booked - 1,
+              available: building.available + 1,
+            },
+            async (error, ans) => {
+              if (error) {
+                return res.status(500).json({
+                  success,
+                  error:
+                    "User cannot be checked out at the moment\nSomething went wrong\nInternal Server Error",
+                  message: error.message,
+                  message2:
+                    "Building collection's available & booked fields not updated",
+                });
+              } else if (ans.modifiedCount === 1) {
+                return res.status(200).json({
+                  success: true,
+                  message: "User successfully checked out.",
+                });
+              } else {
+                return res.status(500).json({
+                  success,
+                  error:
+                    "User cannot be checked out at the moment\nSomething went wrong\nInternal Server Error",
+                  message:
+                    "Building collection's available & booked fields not updated",
+                });
+              }
+            }
+          );
+        } else {
+          return res.status(500).json({
+            success,
+            error:
+              "User cannot be checked out at the moment\nSomething went wrong\nInternal Server Error",
+            message: "Unknown Error",
+          });
+        }
+      }
+    );
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }

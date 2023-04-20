@@ -47,7 +47,7 @@ exports.seller_buildingDetails_type_City = async (req, res, next) => {
         return res.status(500).json({
           success,
           error:
-            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+            "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
           message: error.message,
         });
       } else {
@@ -61,7 +61,7 @@ exports.seller_buildingDetails_type_City = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
@@ -93,7 +93,7 @@ exports.seller_booking_Details = async (req, res, next) => {
           return res.status(500).json({
             success,
             error:
-              "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+              "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
             message: error.message,
           });
         } else {
@@ -107,7 +107,7 @@ exports.seller_booking_Details = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
@@ -116,14 +116,21 @@ exports.seller_booking_Details = async (req, res, next) => {
 //ROUTE-3 controller
 //update roomCount
 exports.seller_update_RoomCount = async (req, res, next) => {
-  const { token, building_id,newRoomCount } = req.body;
+  const { token, building_id, newRoomCount } = req.body;
   try {
     if (!token || !building_id)
       return res.status(500).json({
         success,
         error:
-          "Room count cannot be updated at moment\nSomething went wrong\nInternal Server Error",
+          "Room count cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
         message: "token or building_id is not provided",
+      });
+    if (!newRoomCount && newRoomCount !== 0)
+      return res.status(500).json({
+        success,
+        error:
+          "Room count cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
+        message: "newRoomCount is not provided",
       });
 
     const _id = jwt.verify(token, JWT_SECRET)._id;
@@ -134,7 +141,7 @@ exports.seller_update_RoomCount = async (req, res, next) => {
       return res.status(404).json({
         success,
         error:
-          "Room count cannot be updated at moment\nSomething went wrong\nInternal Server Error",
+          "Room count cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
         message: "Seller not available for provided seller_id",
       });
     }
@@ -148,81 +155,57 @@ exports.seller_update_RoomCount = async (req, res, next) => {
       return res.status(404).json({
         success,
         error:
-          "Room count cannot be updated at moment\nSomething went wrong\nInternal Server Error",
+          "Room count cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
         message: "building not available for provided building_id",
       });
     }
-
-    if (building.available === 0) {
-      return res.status(404).json({
+    if (newRoomCount === building.roomCount) {
+      return res.status(400).json({
         success,
-        error: "Booking cannot be done at moment\nNo rooms are available.",
-        message: "building's available roomCount=0",
+        error: `New room count cannot be sameas previous room count\nTry with updated value`,
+        message: "same count provided as previous",
+      });
+    }
+    if (newRoomCount < building.booked) {
+      const num = building.booked - newRoomCount;
+      return res.status(400).json({
+        success,
+        error: `Room count cannot be updated at this moment\n${building.booked} person(s) already have booking in this building\nNew Room count should be greater than ${building.booked}\nOR\nCheck out atleast ${num} of your customer(s) to continue with this same room count`,
+        message: "newRoomCount < building.booked",
       });
     }
 
-    // Check if user has already booked in this building
-    Booking.findOne(
-      { user: _id, seller: seller_id, building: building_id, status: "booked" },
-      async (error, booking) => {
-        console.log(2);
-        if (booking) {
-          console.log(30);
-          return res.status(409).json({
-            success,
-            error: `You  already have a booking in this building.`,
-            message: "Already Exists",
-          });
-        } else if (error) {
+    // Updating booked and available fields
+    Building.updateOne(
+      {
+        _id: building_id,
+      },
+      {
+        roomCount: newRoomCount,
+        available: newRoomCount - building.booked,
+      },
+      async (error, ans) => {
+        if (error) {
           return res.status(500).json({
             success,
             error:
-              "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+              "Room count cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
             message: error.message,
           });
-        } else {
-          //Creating Booking
-          await Booking.create({
-            user: _id,
-            seller: seller_id,
-            building: building_id,
-            status: "booked",
+        } else if (ans.modifiedCount === 1) {
+          return res.status(200).json({
+            success: true,
+            message:
+              "Room Count of your building has been successfully updated.",
           });
-          console.log(11);
-
-          // Updating booked and available fields
-          Building.updateOne(
-            {
-              _id: building_id,
-            },
-            {
-              booked: building.booked + 1,
-              available: building.available - 1,
-            },
-            async (error, ans) => {
-              if (error) {
-                return res.status(500).json({
-                  success,
-                  error:
-                    "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
-                  message: error.message,
-                });
-              } else if (ans.modifiedCount === 1) {
-                return res.status(200).json({
-                  success: true,
-                  message: "Your booking has been successfully done.",
-                });
-              } else {
-                return res.status(500).json({
-                  success,
-                  error:
-                    "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
-                  message:
-                    "Building collection's available & booked fields not updated",
-                });
-              }
-            }
-          );
+        } else {
+          return res.status(500).json({
+            success,
+            error:
+              "Room count cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
+            message:
+              "Building collection's roomCount & booked fields not updated",
+          });
         }
       }
     );
@@ -230,7 +213,7 @@ exports.seller_update_RoomCount = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Booking cannot be done at moment\nSomething went wrong\nInternal Server Error",
+        "Room count cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }

@@ -44,7 +44,7 @@ exports.user_booking_Details = async (req, res, next) => {
           return res.status(500).json({
             success,
             error:
-              "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+              "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
             message: error.message,
           });
         } else {
@@ -58,14 +58,14 @@ exports.user_booking_Details = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
 };
 
 //Route-1 controller
-//details of building with building
+//user gets details of building with building_id
 exports.user_building_Details = async (req, res, next) => {
   const { token, building_id } = req.body;
   try {
@@ -83,7 +83,7 @@ exports.user_building_Details = async (req, res, next) => {
           return res.status(500).json({
             success,
             error:
-              "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+              "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
             message: error.message,
           });
         } else {
@@ -97,7 +97,7 @@ exports.user_building_Details = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }

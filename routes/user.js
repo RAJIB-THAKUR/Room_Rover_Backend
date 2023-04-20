@@ -7,13 +7,13 @@ const userController = require("../controllers/user");
 
 //-------------------------------------ROUTES-----------------------
 //ROUTE-1 : 
-router.post(
+router.get(
   "/user_booking_Details",
   userController.user_booking_Details
 );
 
-//ROUTE-1 : 
-router.post(
+//ROUTE-2 : user gets details of building with building_id
+router.get(
     "/user_building_Details",
     userController.user_building_Details
   );

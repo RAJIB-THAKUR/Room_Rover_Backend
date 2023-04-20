@@ -65,7 +65,7 @@ exports.addBuilding = async (req, res, next) => {
                 return res.status(500).json({
                   success,
                   error:
-                    "Building could not be added at moment\nSomething went wrong\nInternal Server Error",
+                    "Building could not be added at this moment\nSomething went wrong\nInternal Server Error",
                   message: error.message,
                 });
               } else {
@@ -106,7 +106,7 @@ exports.deleteBuilding = async (req, res, next) => {
           return res.status(500).json({
             success,
             error:
-              "Building could not be deleted at moment\nSomething went wrong\nInternal Server Error",
+              "Building could not be deleted at this moment\nSomething went wrong\nInternal Server Error",
             message: error.message,
           });
         } else if (ans.deletedCount === 0) {
@@ -127,7 +127,7 @@ exports.deleteBuilding = async (req, res, next) => {
           return res.status(500).json({
             success,
             error:
-              "Building could not be deleted at moment\nSomething went wrong\nInternal Server Error",
+              "Building could not be deleted at this moment\nSomething went wrong\nInternal Server Error",
             message: "Error",
           });
         }
@@ -137,7 +137,7 @@ exports.deleteBuilding = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Building could not be deleted at moment\nSomething went wrong\nInternal Server Error",
+        "Building could not be deleted at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
@@ -163,7 +163,7 @@ exports.allCities_roomCount_minCost = async (req, res, next) => {
         return res.status(500).json({
           success,
           error:
-            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+            "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
           message: error.message,
         });
       } else {
@@ -177,7 +177,7 @@ exports.allCities_roomCount_minCost = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
@@ -203,7 +203,7 @@ exports.allBuildingTypes_roomCount_minCost = async (req, res, next) => {
         return res.status(500).json({
           success,
           error:
-            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+            "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
           message: error.message,
         });
       } else {
@@ -217,7 +217,7 @@ exports.allBuildingTypes_roomCount_minCost = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
@@ -255,7 +255,7 @@ exports.buildingDetails_Type_City_wise = async (req, res, next) => {
         return res.status(500).json({
           success,
           error:
-            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+            "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
           message: error.message,
         });
       } else {
@@ -269,7 +269,7 @@ exports.buildingDetails_Type_City_wise = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
@@ -304,7 +304,7 @@ exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
         return res.status(500).json({
           success,
           error:
-            "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+            "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
           message: error.message,
         });
       } else {
@@ -318,7 +318,7 @@ exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
     return res.status(500).json({
       success,
       error:
-        "Data cannot be fetched at moment\nSomething went wrong\nInternal Server Error",
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
       message: error.message,
     });
   }
