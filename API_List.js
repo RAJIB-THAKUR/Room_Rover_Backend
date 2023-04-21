@@ -39,6 +39,8 @@
 // 3)put
 // https://room-rover-app-backend-mern.onrender.com/api/seller_update_RoomCount
 
+//4)get 
+// https://room-rover-app-backend-mern.onrender.com/api/seller_profile
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 
