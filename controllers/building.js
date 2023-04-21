@@ -226,7 +226,7 @@ exports.allBuildingTypes_roomCount_minCost = async (req, res, next) => {
 //ROUTE-5 contoller --- for Bisu
 //You can provide any or all fields in body out of 2 (city,buildingType)
 exports.buildingDetails_Type_City_wise = async (req, res, next) => {
-  const { token, city, buildingType } = req.body;
+  const { city, buildingType } = req.body;
   try {
     const match = {};
 

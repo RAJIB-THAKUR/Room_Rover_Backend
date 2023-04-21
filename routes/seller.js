@@ -20,4 +20,9 @@ router.put(
   sellerController.seller_update_RoomCount
 );
 
+//ROUTE:4 : fetch seller profile details
+router.get(
+  "/seller_profile",
+  sellerController.seller_profile
+);
 module.exports = router;

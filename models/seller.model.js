@@ -27,6 +27,13 @@ const sellerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String,
+    trim: true,
+    required: true,
+    max: 50,
+    default: "Not provided yet",
+  },
   prof_Pic: { type: String },
   verified: {
     type: Boolean,
