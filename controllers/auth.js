@@ -487,7 +487,7 @@ exports.updatePassword = async (req, res, next) => {
         else {
           if (ans.modifiedCount === 1) {
             return res.status(200).send({
-              success,
+              success: true,
               message: "Password Updated Successfully",
             });
           } else {
