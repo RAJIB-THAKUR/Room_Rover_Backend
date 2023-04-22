@@ -31,31 +31,15 @@ exports.userLoginValidator = [
 
 exports.generateOTPValidator = [
   check("email").isEmail().withMessage("Enter a valid Email address"),
-
-  check("userSellerType")
-    .matches(/^(user|seller)$/i)
-    .withMessage(`User Seller Type must be either "user" or "seller"`),
 ];
 
 exports.verifyOTPValidator = [
-  check("userSellerType")
-    .matches(/^(user|seller)$/i)
-    .withMessage(`User Seller Type must be either "user" or "seller"`),
-
   check("otp")
     .isLength({ min: 4, max: 4 })
     .withMessage("OTP must be of 4 digits only"),
-
-  // check("type")
-  //   .matches(/^(resetPswd|verifyAccount)$/i)
-  //   .withMessage(`User Seller Type must be either "user" or "seller"`),
 ];
 
 exports.updatePasswordValidator = [
-  check("userSellerType")
-    .matches(/^(user|seller)$/i)
-    .withMessage(`User Seller Type must be either "user" or "seller"`),
-
   check("new_Password")
     .isLength({ min: 5 })
     .withMessage("Password must be of minimun 5 characters"),

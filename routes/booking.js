@@ -13,7 +13,7 @@ router.post("/bookRoom", bookingController.bookRoom);
 //ROUTE-2 : Cancel Booking
 router.put("/cancelBooking", bookingController.cancelBooking);
 
-//ROUTE-2 : Seller checkOut's User
+//ROUTE-3 : Seller checkOut's User
 router.put("/checkOut_User", bookingController.checkOut_User);
 
 module.exports = router;
