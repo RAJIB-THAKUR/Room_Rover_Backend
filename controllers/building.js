@@ -275,6 +275,49 @@ exports.buildingDetails_Type_City_wise = async (req, res, next) => {
   }
 };
 
+//Route-6 controller
+//Gets details of building with building_id
+exports.building_Details = async (req, res, next) => {
+  const { building_id } = req.body;
+  if (!building_id)
+    return res.status(401).json({
+      success,
+      error: "Some internal error occured\nTry Again",
+      message: "building_id missing in request body",
+    });
+  try {
+    Building.find({ _id: building_id })
+      .populate({
+        path: "seller",
+        model: "Seller",
+        select: "_id name mobile email address",
+      })
+      .exec((error, result) => {
+        if (error) {
+          return res.status(500).json({
+            success,
+            error:
+              "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
+            message: error.message,
+          });
+        } else {
+          return res.status(200).json({
+            success: true,
+            data: result,
+          });
+        }
+      });
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
+
+
 //Filhal not using
 exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
   const { token } = req.body;

@@ -65,45 +65,6 @@ exports.user_booking_Details = async (req, res, next) => {
   }
 };
 
-//Route-2 controller
-//user gets details of building with building_id
-exports.user_building_Details = async (req, res, next) => {
-  const { token, building_id } = req.body;
-  try {
-    const _id = jwt.verify(token, JWT_SECRET)._id;
-
-    Building.find({ _id: building_id })
-
-      .populate({
-        path: "seller",
-        model: "Seller",
-        select: "_id name mobile email address",
-      })
-      .exec((error, result) => {
-        if (error) {
-          return res.status(500).json({
-            success,
-            error:
-              "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
-            message: error.message,
-          });
-        } else {
-          return res.status(200).json({
-            success: true,
-            data: result,
-          });
-        }
-      });
-  } catch (error) {
-    return res.status(500).json({
-      success,
-      error:
-        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
-      message: error.message,
-    });
-  }
-};
-// shift remove _id
 
 //ROUTE-2 contoller
 //fetch user or seller profile details

@@ -31,9 +31,12 @@ router.get(
 );
 
 //ROUTE-5 :All Building details(Provide city or buildingType or both)
-router.get(
+router.post(
   "/buildingDetails_Type_City_wise",
   buildingController.buildingDetails_Type_City_wise
 );
+
+//ROUTE-6 : Get details of building with building_id
+router.post("/building_Details", buildingController.building_Details);
 
 module.exports = router;

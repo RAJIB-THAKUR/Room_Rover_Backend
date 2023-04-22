@@ -1,4 +1,5 @@
 // //-------------routes auth.js-----------
+
 // 1)post
 // https://room-rover-app-backend-mern.onrender.com/api/register
 
@@ -14,15 +15,19 @@
 // 5)put
 // https://room-rover-app-backend-mern.onrender.com/api/updatePassword
 
+
+
 // ------------------------------------------------------------------------------------------------------------------------------------------
 
 
+
 // //-------------routes user.js-----------
-// 1)get
+// 1)post
 // https://room-rover-app-backend-mern.onrender.com/api/user_booking_Details
 
-// 2)get
-// https://room-rover-app-backend-mern.onrender.com/api/user_building_Details
+//2)post
+// https://room-rover-app-backend-mern.onrender.com/api/seller_profile
+
 
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
@@ -30,23 +35,24 @@
 
 
 // //-------------routes seller.js-----------
-// 1)get
+
+// 1)post
 // https://room-rover-app-backend-mern.onrender.com/api/seller_buildingDetails_type_City
 
-// 2)get
+// 2)post
 // https://room-rover-app-backend-mern.onrender.com/api/booking_Details
 
 // 3)put
 // https://room-rover-app-backend-mern.onrender.com/api/seller_update_RoomCount
 
-//4)get 
-// https://room-rover-app-backend-mern.onrender.com/api/seller_profile
+
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
 // //-------------routes booking.js-----------
+
 // 1)post
 // https://room-rover-app-backend-mern.onrender.com/api/bookRoom
 
@@ -62,6 +68,7 @@
 
 
 // //-------------routes building.js-----------
+
 // 1)post
 // https://room-rover-app-backend-mern.onrender.com/api/addBuilding
 
@@ -74,5 +81,8 @@
 // 4)get
 // https://room-rover-app-backend-mern.onrender.com/api/allBuildingTypes_roomCount_minCost
 
-// 5)get
+// 5)post
 // https://room-rover-app-backend-mern.onrender.com/api/buildingDetails_Type_City_wise
+
+// 6)post
+// https://room-rover-app-backend-mern.onrender.com/api/building_Details
