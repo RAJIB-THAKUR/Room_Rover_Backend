@@ -26,7 +26,7 @@
 // https://room-rover-app-backend-mern.onrender.com/api/user_booking_Details
 
 //2)post
-// https://room-rover-app-backend-mern.onrender.com/api/seller_profile
+// https://room-rover-app-backend-mern.onrender.com/api/user_seller_profile
 
 
 
@@ -40,7 +40,7 @@
 // https://room-rover-app-backend-mern.onrender.com/api/seller_buildingDetails_type_City
 
 // 2)post
-// https://room-rover-app-backend-mern.onrender.com/api/booking_Details
+// https://room-rover-app-backend-mern.onrender.com/api/seller_booking_Details
 
 // 3)put
 // https://room-rover-app-backend-mern.onrender.com/api/seller_update_RoomCount
