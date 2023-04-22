@@ -219,4 +219,70 @@ exports.seller_update_RoomCount = async (req, res, next) => {
   }
 };
 
+//ROUTE-4 controller
+//seller fetches List of all Cities where he has buildings
+exports.seller_Cities_List = async (req, res, next) => {
+  const { token } = req.body;
+  try {
+    const _id = jwt.verify(token, JWT_SECRET)._id;
 
+    Building.find({
+      seller: _id,
+    }).distinct("city", (error, result) => {
+      if (error) {
+        return res.status(500).json({
+          success,
+          error:
+            "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
+          message: error.message,
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          data: result,
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
+
+//ROUTE-5 controller
+//seller fetches List of all BuildingTypes where he has buildings
+exports.seller_BuildingTypes_List = async (req, res, next) => {
+  const { token } = req.body;
+  try {
+    const _id = jwt.verify(token, JWT_SECRET)._id;
+
+    Building.find({
+      seller: _id,
+    }).distinct("buildingType", (error, result) => {
+      if (error) {
+        return res.status(500).json({
+          success,
+          error:
+            "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
+          message: error.message,
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          data: result,
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};

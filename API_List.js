@@ -46,6 +46,12 @@
 // 3)put
 // https://room-rover-app-backend-mern.onrender.com/api/seller_update_RoomCount
 
+// 4)post
+// https://room-rover-app-backend-mern.onrender.com/api/seller_Cities_List
+
+// 5)post
+// https://room-rover-app-backend-mern.onrender.com/api/seller_BuildingTypes_List
+
 
 
 // ------------------------------------------------------------------------------------------------------------------------------------------

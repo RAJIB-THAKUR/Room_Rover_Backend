@@ -381,5 +381,3 @@ exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
 // price
 // type
 // available
-
-
