@@ -157,7 +157,7 @@ exports.allCities_roomCount_minCost = async (req, res, next) => {
           minCost: { $min: "$price" },
         },
       },
-      { $sort: { _id: 1 } },
+      { $sort: { roomCount: -1 } },
     ]).exec((error, result) => {
       if (error) {
         return res.status(500).json({
@@ -185,10 +185,7 @@ exports.allCities_roomCount_minCost = async (req, res, next) => {
 
 //ROUTE-4 contoller --- for Bisu
 exports.allBuildingTypes_roomCount_minCost = async (req, res, next) => {
-  // const { token, building_id } = req.body;
   try {
-    // const _id = jwt.verify(token, JWT_SECRET)._id;
-    // console.log(_id);
     Building.aggregate([
       {
         $group: {
@@ -197,7 +194,7 @@ exports.allBuildingTypes_roomCount_minCost = async (req, res, next) => {
           minCost: { $min: "$price" },
         },
       },
-      { $sort: { _id: 1 } },
+      { $sort: { roomCount: -1 } },
     ]).exec((error, result) => {
       if (error) {
         return res.status(500).json({
@@ -224,9 +221,9 @@ exports.allBuildingTypes_roomCount_minCost = async (req, res, next) => {
 };
 
 //ROUTE-5 contoller --- for Bisu
-//You can provide any or all fields in body out of 2 (city,buildingType)
+//You can provide any or all fields in body out of 4 (city, buildingType, minCost, maxCost)
 exports.buildingDetails_Type_City_wise = async (req, res, next) => {
-  const { city, buildingType } = req.body;
+  const { city, buildingType, minCost, maxCost } = req.body;
   try {
     const match = {};
 
@@ -236,11 +233,19 @@ exports.buildingDetails_Type_City_wise = async (req, res, next) => {
     if (buildingType) {
       match.buildingType = buildingType;
     }
+    if (minCost) {
+      match.price = { $gte: minCost };
+    }
+    if (maxCost) {
+      match.price = { $lte: maxCost };
+    }
 
     Building.aggregate([
       {
+        // price: { $gte: minCost, $lte: maxCost },
         $match: match,
       },
+      { $sort: { roomCount: -1 } },
       // {
       //   $project: {
       //     name: 1,
@@ -317,7 +322,6 @@ exports.building_Details = async (req, res, next) => {
   }
 };
 
-
 //Filhal not using
 exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
   const { token } = req.body;
@@ -378,5 +382,4 @@ exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
 // type
 // available
 
-//5
-// min max price
+

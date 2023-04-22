@@ -19,17 +19,20 @@ exports.user_booking_Details = async (req, res, next) => {
   try {
     const _id = jwt.verify(token, JWT_SECRET)._id;
 
-    Booking.find({ user: _id }, { _id: 1, status: 1 })
+    Booking.find(
+      { user: _id, status: { $in: ["booked", "checkedOut"] } },
+      { _id: 1, status: 1 }
+    )
       //   .populate({
       //     path: "user",
       //     model: "user",
       //     select: "_id name mobile email address",
       //   })
-      //   .populate({
-      //     path: "seller",
-      //     model: "Seller",
-      //     select: " name mobile email address",
-      //   })
+      .populate({
+        path: "seller",
+        model: "Seller",
+        select: " name mobile email address -_id",
+      })
       .populate({
         path: "building",
         model: "Building",
@@ -65,7 +68,6 @@ exports.user_booking_Details = async (req, res, next) => {
   }
 };
 
-
 //ROUTE-2 contoller
 //fetch user or seller profile details
 exports.user_seller_profile = async (req, res, next) => {
@@ -85,8 +87,8 @@ exports.user_seller_profile = async (req, res, next) => {
 
     UserSeller.findOne(
       { _id: new ObjectId(_id) },
-      { name: 1, mobile: 1, email: 1 },
-      async (error, seller) => {
+      { name: 1, mobile: 1, email: 1, address: 1, _id: 0 },
+      async (error, result) => {
         if (error) {
           console.log(2);
 
@@ -97,11 +99,17 @@ exports.user_seller_profile = async (req, res, next) => {
             message: error.message,
           });
         } else {
-          console.log(3);
-
+          if (!result) {
+            return res.status(401).json({
+              success,
+              error:
+                "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
+              message: "No user/seller found for the provided token(_id)",
+            });
+          }
           return res.status(200).json({
             success: true,
-            data: seller,
+            data: result,
           });
         }
       }
