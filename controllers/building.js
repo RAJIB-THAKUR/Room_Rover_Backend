@@ -328,3 +328,12 @@ exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
 // type wise---sort
 //kolkata city ...building
 //type given...building
+
+// name
+// city
+// price
+// type
+// available
+
+//5
+// min max price

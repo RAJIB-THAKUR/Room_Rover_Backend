@@ -18,4 +18,10 @@ router.get(
     userController.user_building_Details
   );
 
+  //ROUTE:3 : fetch user or seller profile details
+router.get(
+  "/user_seller_profile",
+  userController.user_seller_profile
+);
+
 module.exports = router;

@@ -219,44 +219,4 @@ exports.seller_update_RoomCount = async (req, res, next) => {
   }
 };
 
-//ROUTE-4 contoller
-//fetch seller profile details
-exports.seller_profile = async (req, res, next) => {
-  const { token } = req.body;
-  try {
-    const _id = jwt.verify(token, JWT_SECRET)._id;
-    console.log(1);
-    Seller.findOne(
-      { _id: new ObjectId(_id) },
-      { name: 1, mobile: 1, email: 1 },
-      async (error, seller) => {
-        if (error) {
-          console.log(2);
 
-          return res.status(500).json({
-            success,
-            error:
-              "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
-            message: error.message,
-          });
-        } else {
-          console.log(3);
-
-          return res.status(200).json({
-            success: true,
-            data: seller,
-          });
-        }
-      }
-    );
-  } catch (error) {
-    console.log(4);
-
-    return res.status(500).json({
-      success,
-      error:
-        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
-      message: error.message,
-    });
-  }
-};
