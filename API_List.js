@@ -1,4 +1,4 @@
-// //-------------routes auth.js-----------
+//--------------------------routes auth.js------------------------
 
 // 1)post
 // https://room-rover-app-backend-mern.onrender.com/api/register
@@ -21,7 +21,8 @@
 
 
 
-// //-------------routes user.js-----------
+//--------------------------routes user.js------------------------
+
 // 1)post
 // https://room-rover-app-backend-mern.onrender.com/api/user_booking_Details
 
@@ -34,7 +35,7 @@
 
 
 
-// //-------------routes seller.js-----------
+//--------------------------routes seller.js------------------------
 
 // 1)post
 // https://room-rover-app-backend-mern.onrender.com/api/seller_buildingDetails_type_City
@@ -51,7 +52,7 @@
 
 
 
-// //-------------routes booking.js-----------
+//--------------------------routes booking.js------------------------
 
 // 1)post
 // https://room-rover-app-backend-mern.onrender.com/api/bookRoom
@@ -67,7 +68,7 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------
 
 
-// //-------------routes building.js-----------
+//--------------------------routes building.js------------------------
 
 // 1)post
 // https://room-rover-app-backend-mern.onrender.com/api/addBuilding
