@@ -228,16 +228,21 @@ exports.buildingDetails_Type_City_wise = async (req, res, next) => {
     const match = {};
 
     if (city) {
-      match.city = city;
+      // match.city = city;
+      //The $regex operator allows you to use regular expressions to match a string. In this case, we're using a regular expression to make the matching of city case-insensitive.
+      match.city = { $regex: new RegExp(city, "i") };
     }
     if (buildingType) {
-      match.buildingType = buildingType;
+      match.buildingType = { $regex: new RegExp(buildingType, "i") };
     }
-    if (minCost) {
+    if (minCost && !maxCost) {
       match.price = { $gte: minCost };
     }
-    if (maxCost) {
+    if (!minCost && maxCost) {
       match.price = { $lte: maxCost };
+    }
+    if (minCost && maxCost) {
+      match.price = { $gte: minCost, $lte: maxCost };
     }
 
     Building.aggregate([
@@ -381,3 +386,6 @@ exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
 // price
 // type
 // available
+
+//mincost and maxcost
+// type & city case handling
