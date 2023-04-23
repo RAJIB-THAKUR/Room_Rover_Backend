@@ -86,7 +86,7 @@ exports.user_seller_profile = async (req, res, next) => {
     const _id = jwt.verify(token, JWT_SECRET)._id;
 
     UserSeller.findOne(
-      { _id: new ObjectId(_id) },
+      { _id: _id },
       { name: 1, mobile: 1, email: 1, address: 1, _id: 0 },
       async (error, result) => {
         if (error) {
