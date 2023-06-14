@@ -60,6 +60,7 @@ const sellerSchema = new mongoose.Schema({
   //   },
   // ],
   createdAt: { type: Date, default: Date.now },
+  coins: { type: Number, default: 0 },
 });
 
 const Seller = mongoose.model("Seller", sellerSchema);

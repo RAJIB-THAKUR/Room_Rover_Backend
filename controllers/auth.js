@@ -342,7 +342,7 @@ exports.generateOTP = async (req, res) => {
   }
 };
 
-exports.verifyOTP = async (req, res, next) => {
+exports. = async (req, res, next) => {
   try {
     const { userSellerType, token, otp } = req.body;
 
@@ -384,7 +384,7 @@ exports.verifyOTP = async (req, res, next) => {
           {
             _id: user._id,
           },
-          { $set: { verified: true } },
+          { $set: { verified: true, coins: 20000 } },
           async (error, ans) => {
             if (error) {
               return res.status(500).json({

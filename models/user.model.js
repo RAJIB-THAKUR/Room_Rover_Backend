@@ -52,6 +52,7 @@ const userSchema = new mongoose.Schema({
   // ],
   createdAt: { type: Date, default: Date.now },
   prof_Pic: { type: String },
+  coins: { type: Number, default: 0 },
 });
 
 const User = mongoose.model("user", userSchema);
