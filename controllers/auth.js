@@ -342,7 +342,7 @@ exports.generateOTP = async (req, res) => {
   }
 };
 
-exports. = async (req, res, next) => {
+exports.verifyOTP = async (req, res, next) => {
   try {
     const { userSellerType, token, otp } = req.body;
 

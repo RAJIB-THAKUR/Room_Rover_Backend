@@ -26,7 +26,7 @@ exports.bookRoom = async (req, res, next) => {
 
     const _id = jwt.verify(token, JWT_SECRET)._id;
 
-    const user = await User.findOne({ _id: _id }, { _id: 1 });
+    const user = await User.findOne({ _id: _id }, { _id: 1, coins: 1 });
 
     if (!user) {
       return res.status(404).json({
@@ -37,7 +37,10 @@ exports.bookRoom = async (req, res, next) => {
       });
     }
 
-    const seller = await Seller.findOne({ _id: seller_id }, { _id: 1 });
+    const seller = await Seller.findOne(
+      { _id: seller_id },
+      { _id: 1, coins: 1 }
+    );
 
     if (!seller) {
       return res.status(404).json({
@@ -50,7 +53,7 @@ exports.bookRoom = async (req, res, next) => {
 
     const building = await Building.findOne(
       { _id: building_id },
-      { _id: 1, available: 1, booked: 1 }
+      { _id: 1, available: 1, booked: 1, price: 1 }
     );
 
     if (!building) {
@@ -70,71 +73,73 @@ exports.bookRoom = async (req, res, next) => {
       });
     }
 
-    // Check if user has already booked in this building
-    Booking.findOne(
-      { user: _id, seller: seller_id, building: building_id, status: "booked" },
-      async (error, booking) => {
-        console.log(2);
-        if (booking) {
-          console.log(30);
-          return res.status(409).json({
-            success,
-            error: `You  already have a booking in this building.`,
-            message: "Already Exists",
-          });
-        } else if (error) {
-          return res.status(500).json({
-            success,
-            error:
-              "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
-            message: error.message,
-          });
-        } else {
-          //Creating Booking
-          await Booking.create({
-            user: _id,
-            seller: seller_id,
-            building: building_id,
-            status: "booked",
-          });
-          console.log(11);
+    if (user.coins < building.price) {
+      return res.status(404).json({
+        success,
+        error:
+          "You don't have enough coins\nBooking cannot be done at this moment.",
+        message: "user's coins < building's price",
+      });
+    }
 
-          // Updating booked and available fields
-          Building.updateOne(
-            {
-              _id: building_id,
-            },
-            {
-              booked: building.booked + 1,
-              available: building.available - 1,
-            },
-            async (error, ans) => {
-              if (error) {
-                return res.status(500).json({
-                  success,
-                  error:
-                    "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
-                  message: error.message,
-                });
-              } else if (ans.modifiedCount === 1) {
-                return res.status(200).json({
-                  success: true,
-                  message: "Your booking has been successfully done.",
-                });
-              } else {
-                return res.status(500).json({
-                  success,
-                  error:
-                    "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
-                  message:
-                    "Building collection's available & booked fields not updated",
-                });
-              }
-            }
-          );
-        }
+    // Check if user has already booked in this building
+    const booking = await Booking.findOne({
+      user: _id,
+      seller: seller_id,
+      building: building_id,
+      status: "booked",
+    });
+    if (booking) {
+      console.log(30);
+      return res.status(409).json({
+        success,
+        error: `You  already have a booking in this building.`,
+        message: "Already Exists",
+      });
+    }
+    //Creating Booking
+    await Booking.create({
+      user: _id,
+      seller: seller_id,
+      building: building_id,
+      status: "booked",
+    });
+
+    // Updating "booked" and "available" fields
+    await Building.updateOne(
+      {
+        _id: building_id,
+      },
+      {
+        booked: building.booked + 1,
+        available: building.available - 1,
       }
     );
+
+    //Decrement users coins
+    await User.updateOne(
+      {
+        _id: user._id,
+      },
+      {
+        coins: user.coins - building.price,
+      }
+    );
+
+    //Increment sellers coins
+    await Seller.updateOne(
+      {
+        _id: seller._id,
+      },
+      {
+        coins: seller.coins + building.price,
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Your booking has been successfully done.",
+    });
   } catch (error) {
     return res.status(500).json({
       success,
@@ -161,7 +166,7 @@ exports.cancelBooking = async (req, res, next) => {
 
     const _id = jwt.verify(token, JWT_SECRET)._id;
 
-    const user = await User.findOne({ _id: _id }, { _id: 1 });
+    const user = await User.findOne({ _id: _id }, { _id: 1, coins: 1 });
 
     if (!user) {
       return res.status(404).json({
@@ -172,7 +177,14 @@ exports.cancelBooking = async (req, res, next) => {
       });
     }
 
-    const booking = await Booking.findOne({ _id: booking_id, user: _id });
+    const booking = await Booking.findOne({
+      _id: booking_id,
+      user: _id,
+    }).populate({
+      path: "seller",
+      model: "Seller",
+      select: "_id coins",
+    });
 
     if (!booking) {
       return res.status(404).json({
@@ -191,84 +203,63 @@ exports.cancelBooking = async (req, res, next) => {
       });
     }
 
-    Booking.updateOne(
+    const building_id = booking.building;
+    const building = await Building.findOne({ _id: building_id });
+    if (!building) {
+      return res.status(500).json({
+        success,
+        error:
+          "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
+        message: "Building collection's available & booked fields not updated",
+        message2:
+          "Because there is no building with the building_ID present in booking collection for this booking_ID provided",
+      });
+    }
+
+    //Change booking status to "cancelled"
+    await Booking.updateOne(
       {
         _id: booking_id,
         user: _id,
       },
-      { status: "cancelled" },
-      async (error, ans) => {
-        if (error) {
-          return res.status(500).json({
-            success,
-            error:
-              "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
-            message: error.message,
-          });
-        } else if (ans.modifiedCount === 1) {
-          const building_id = booking.building;
+      { status: "cancelled" }
+    );
 
-          const building = await Building.findOne({ _id: building_id });
-
-          console.log(12);
-
-          if (building) {
-            console.log(13);
-            Building.updateOne(
-              {
-                _id: building_id,
-              },
-              {
-                booked: building.booked - 1,
-                available: building.available + 1,
-              },
-              async (error, ans) => {
-                if (error) {
-                  return res.status(500).json({
-                    success,
-                    error:
-                      "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
-                    message: error.message,
-                    message2:
-                      "Building collection's available & booked fields not updated",
-                  });
-                } else if (ans.modifiedCount === 1) {
-                  return res.status(200).json({
-                    success: true,
-                    message: "Your booking has been successfully cancelled.",
-                  });
-                } else {
-                  return res.status(500).json({
-                    success,
-                    error:
-                      "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
-                    message:
-                      "Building collection's available & booked fields not updated",
-                  });
-                }
-              }
-            );
-          } else {
-            return res.status(500).json({
-              success,
-              error:
-                "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
-              message:
-                "Building collection's available & booked fields not updated",
-              message2:
-                "Because there is no building with the building_ID present in booking collection for this booking_ID provided",
-            });
-          }
-        } else {
-          return res.status(500).json({
-            success,
-            error:
-              "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
-            message: "Unknown Error",
-          });
-        }
+    //Increment users "coins"
+    await User.updateOne(
+      {
+        _id: user._id,
+      },
+      {
+        coins: user.coins + building.price,
       }
     );
+
+    //Decrement sellers "coins"
+    await Seller.updateOne(
+      {
+        _id: booking.seller._id,
+      },
+      {
+        coins: booking.seller.coins - building.price,
+      }
+    );
+
+    // Updating "booked" and "available" fields
+    await Building.updateOne(
+      {
+        _id: building_id,
+      },
+      {
+        booked: building.booked - 1,
+        available: building.available + 1,
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Your booking has been successfully cancelled.",
+    });
   } catch (error) {
     return res.status(500).json({
       success,
