@@ -23,6 +23,7 @@ exports.addBuilding = async (req, res, next) => {
     description,
     price,
     roomCount,
+    base64,
   } = req.body;
 
   try {
@@ -57,6 +58,7 @@ exports.addBuilding = async (req, res, next) => {
               roomCount,
               available: roomCount,
               seller: _id,
+              image: base64,
             },
             async (error, newBuilding) => {
               console.log(5);
