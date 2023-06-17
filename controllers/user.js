@@ -87,7 +87,7 @@ exports.user_seller_profile = async (req, res, next) => {
 
     UserSeller.findOne(
       { _id: _id },
-      { name: 1, mobile: 1, email: 1, address: 1, _id: 0 },
+      { name: 1, mobile: 1, email: 1, address: 1, _id: 0, coins: 1 },
       async (error, result) => {
         if (error) {
           console.log(2);
