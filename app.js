@@ -7,8 +7,11 @@ const connect_MongoDB = require("./helpers/connectDB");
 connect_MongoDB();
 
 //-----------App  Middleware-----------
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+//RAM changes 17/06/2023 for IMG BAse64
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cors());
 
 //-----------ROUTES-----------
