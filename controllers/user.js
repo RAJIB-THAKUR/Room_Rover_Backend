@@ -88,6 +88,7 @@ exports.user_seller_profile = async (req, res, next) => {
         _id: 0,
         coins: 1,
         wishlist: 1,
+        image: 1,
       },
       async (error, result) => {
         if (error) {
@@ -116,8 +117,6 @@ exports.user_seller_profile = async (req, res, next) => {
       }
     );
   } catch (error) {
-    console.log(4);
-
     return res.status(500).json({
       success,
       error:
@@ -265,6 +264,72 @@ exports.view_wishlist = async (req, res, next) => {
     return res.status(500).json({
       success,
       error: "Could not fetch the result\nSome Internal Error Occured",
+      message: error.message,
+    });
+  }
+};
+
+//Route-6 contoller
+//Update User Profile Details
+exports.update_profile = async (req, res) => {
+  try {
+    const { token, name, address, base64, userSellerType } = req.body;
+
+    if (userSellerType === "user") UserSeller = User;
+    else if (userSellerType === "seller") UserSeller = Seller;
+    else
+      return res.status(401).json({
+        success,
+        error: "Some internal error occured\nTry Again",
+        message: "User or Seller type missing in request body",
+      });
+    const _id = jwt.verify(token, JWT_SECRET)._id;
+
+    UserSeller.updateOne(
+      {
+        _id: _id,
+      },
+      {
+        name: name,
+        address: address,
+        image: base64,
+      },
+      async (error, ans) => {
+        if (error) {
+          return res.status(500).json({
+            success,
+            error: "Could not update details\nSome Internal Error Occured",
+            message: error.message,
+          });
+        } else {
+          if (ans.modifiedCount === 1) {
+            return res.status(200).json({
+              success: true,
+              message: "Profile details updated successfully.",
+            });
+          } else {
+            if (ans.matchedCount === 1) {
+              return res.status(409).json({
+                success,
+                error:
+                  "Unable to update profile details.\nKindly provide updated details",
+                message: "Same details sent",
+              });
+            } else {
+              return res.status(500).json({
+                success,
+                error: "Could not update details\nSome Internal Error Occured",
+                message: error.message,
+              });
+            }
+          }
+        }
+      }
+    );
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error: "Could not update details\nSome Internal Error Occured",
       message: error.message,
     });
   }

@@ -38,6 +38,8 @@
 //5)post
 // https://room-rover-app-backend-mern.onrender.com/api/view_wishlist
 
+//6)post
+// https://room-rover-app-backend-mern.onrender.com/api/update_profile
 
 
 // ------------------------------------------------------------------------------------------------------------------------------------------

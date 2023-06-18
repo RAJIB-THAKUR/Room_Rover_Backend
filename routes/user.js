@@ -25,4 +25,7 @@ router.post(
   userController.view_all_booking_history
 );
 
+//ROUTE:6 : Update User Profile Details
+router.post("/update_profile", userController.update_profile);
+
 module.exports = router;
