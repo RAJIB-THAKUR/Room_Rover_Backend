@@ -53,6 +53,12 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   image: { type: String },
   coins: { type: Number, default: 0 },
+  wishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Building",
+    },
+  ],
 });
 
 const User = mongoose.model("user", userSchema);
