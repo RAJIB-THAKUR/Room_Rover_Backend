@@ -23,10 +23,10 @@ exports.seller_buildingDetails_type_City = async (req, res, next) => {
     };
 
     if (city) {
-      match.city = { $regex: new RegExp(city, "i") };
+      match.city = { $regex: new RegExp(".*" + city.trim() + ".*", "i") };
     }
     if (buildingType) {
-      match.buildingType = { $regex: new RegExp(buildingType, "i") };
+      match.buildingType = { $regex: new RegExp(".*" + buildingType.trim() + ".*", "i") };
     }
 
     Building.aggregate([
@@ -80,7 +80,7 @@ exports.seller_booking_Details = async (req, res, next) => {
       match.building = building_id;
     }
     if (status) {
-      match.status = { $regex: new RegExp(status, "i") };
+      match.status = { $regex: new RegExp(".*" + status.trim() + ".*", "i") };
     }
     Booking.find(match, { _id: 1, status: 1 })
       .populate({

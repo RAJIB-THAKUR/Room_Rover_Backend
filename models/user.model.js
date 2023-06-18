@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
   //   },
   // ],
   createdAt: { type: Date, default: Date.now },
-  prof_Pic: { type: String },
+  image: { type: String },
   coins: { type: Number, default: 0 },
 });
 

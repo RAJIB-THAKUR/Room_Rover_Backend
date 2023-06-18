@@ -34,7 +34,7 @@ const sellerSchema = new mongoose.Schema({
     max: 50,
     default: "Not provided yet",
   },
-  prof_Pic: { type: String },
+  image: { type: String },
   verified: {
     type: Boolean,
     required: true,

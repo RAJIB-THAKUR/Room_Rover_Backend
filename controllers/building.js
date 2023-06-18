@@ -32,8 +32,11 @@ exports.addBuilding = async (req, res, next) => {
     Building.findOne(
       {
         seller: _id,
-        name: name,
-        city: city,
+        name: new RegExp("^" + name.trim() + "$", "i"),
+        city: new RegExp("^" + city.trim() + "$", "i"),
+
+        // The ^ and $ symbols ensure that the entire value is matched from the beginning to the end, effectively performing an exact match.
+        //i flag as the second argument for the RegExp constructor, we make the matching case-insensitive.
       },
       async (err, building) => {
         console.log(2);
@@ -225,17 +228,26 @@ exports.allBuildingTypes_roomCount_minCost = async (req, res, next) => {
 //ROUTE-5 contoller --- for Bisu
 //You can provide any or all fields in body out of 4 (city, buildingType, minCost, maxCost)
 exports.buildingDetails_Type_City_wise = async (req, res, next) => {
-  const { city, buildingType, minCost, maxCost } = req.body;
+  const { city, name, buildingType, minCost, maxCost } = req.body;
   try {
     const match = {};
 
     if (city) {
       // match.city = city;
       //The $regex operator allows you to use regular expressions to match a string. In this case, we're using a regular expression to make the matching of city case-insensitive.
-      match.city = { $regex: new RegExp(city, "i") };
+      // match.city = { $regex: new RegExp(city, "i") };
+
+      //below we trim extra spaces
+      //Also we retrieve results even if only a few characters match
+      match.city = { $regex: new RegExp(".*" + city.trim() + ".*", "i") };
     }
     if (buildingType) {
-      match.buildingType = { $regex: new RegExp(buildingType, "i") };
+      match.buildingType = {
+        $regex: new RegExp(".*" + buildingType.trim() + ".*", "i"),
+      };
+    }
+    if (name) {
+      match.name = { $regex: new RegExp(".*" + name.trim() + ".*", "i") };
     }
     if (minCost && !maxCost) {
       match.price = { $gte: minCost };
