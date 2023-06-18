@@ -13,37 +13,29 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const ObjectId = require("mongodb").ObjectId;
 
 //Route-1 controller
-//details of user's all booking Details
-exports.user_booking_Details = async (req, res, next) => {
-  const { token } = req.body;
+//View user's all booking history of buildings
+//client must provide "status" as any one of "booked", "checkedOut", "cancelled"
+exports.view_all_booking_history = async (req, res, next) => {
+  const { token, status } = req.body;
   try {
+    const match = {};
+    if (status) {
+      match.status = { $regex: new RegExp(".*" + status.trim() + ".*", "i") };
+    }
     const _id = jwt.verify(token, JWT_SECRET)._id;
+    match.user = _id;
 
-    Booking.find(
-      { user: _id, status: { $in: ["booked", "checkedOut"] } },
-      { _id: 1, status: 1 }
-    )
-      //   .populate({
-      //     path: "user",
-      //     model: "user",
-      //     select: "_id name mobile email address",
-      //   })
+    Booking.find(match, { user: 0, __v: 0 })
       .populate({
         path: "seller",
         model: "Seller",
-        select: " name mobile email address -_id",
+        select: "name mobile email address -_id",
       })
       .populate({
         path: "building",
         model: "Building",
-        select: "_id name city address mobile buildingType price",
-        // populate: {
-        //   path: "seller",
-        //   model: "Seller",
-        //   select: "_id name city address mobile ",
-        // },
-      })
-      .exec((error, result) => {
+        select: "name city address mobile buildingType price",
+      }).exec((error, result) => {
         if (error) {
           return res.status(500).json({
             success,
@@ -67,6 +59,7 @@ exports.user_booking_Details = async (req, res, next) => {
     });
   }
 };
+
 
 //ROUTE-2 contoller
 //fetch user or seller profile details

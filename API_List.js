@@ -24,7 +24,7 @@
 //--------------------------routes user.js------------------------
 
 // 1)post
-// https://room-rover-app-backend-mern.onrender.com/api/user_booking_Details
+// https://room-rover-app-backend-mern.onrender.com/api/view_all_booking_history
 
 //2)post
 // https://room-rover-app-backend-mern.onrender.com/api/user_seller_profile
