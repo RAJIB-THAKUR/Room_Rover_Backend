@@ -29,6 +29,15 @@
 //2)post
 // https://room-rover-app-backend-mern.onrender.com/api/user_seller_profile
 
+// 3)post
+// https://room-rover-app-backend-mern.onrender.com/api/add_to_wishlist
+
+//4)post
+// https://room-rover-app-backend-mern.onrender.com/api/remove_from_wishlist
+
+//5)post
+// https://room-rover-app-backend-mern.onrender.com/api/view_wishlist
+
 
 
 // ------------------------------------------------------------------------------------------------------------------------------------------
