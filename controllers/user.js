@@ -35,7 +35,8 @@ exports.view_all_booking_history = async (req, res, next) => {
         path: "building",
         model: "Building",
         select: "name city address mobile buildingType price",
-      }).exec((error, result) => {
+      })
+      .exec((error, result) => {
         if (error) {
           return res.status(500).json({
             success,
@@ -59,7 +60,6 @@ exports.view_all_booking_history = async (req, res, next) => {
     });
   }
 };
-
 
 //ROUTE-2 contoller
 //fetch user or seller profile details
