@@ -66,7 +66,6 @@ exports.view_all_booking_history = async (req, res, next) => {
 exports.user_seller_profile = async (req, res, next) => {
   const { token, userSellerType } = req.body;
   try {
-    console.log(1);
     if (userSellerType === "user") UserSeller = User;
     else if (userSellerType === "seller") UserSeller = Seller;
     else
@@ -92,8 +91,6 @@ exports.user_seller_profile = async (req, res, next) => {
       },
       async (error, result) => {
         if (error) {
-          console.log(2);
-
           return res.status(500).json({
             success,
             error:

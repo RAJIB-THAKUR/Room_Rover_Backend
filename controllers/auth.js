@@ -47,7 +47,6 @@ exports.registerController = async (req, res, next) => {
     const encryptedPassword = await bcrypt.hash(password, salt);
 
     if (oldUser_Same_Email && oldUser_Same_Email.verified === false) {
-      console.log(1211);
       //TO ENSURE THAT NEW MOBILE IS NOT REGISTERED WITH SOMEONE ELSE
       const oldUser_Same_Mobile = await UserSeller.findOne(
         {
@@ -61,7 +60,6 @@ exports.registerController = async (req, res, next) => {
         oldUser_Same_Mobile &&
         oldUser_Same_Mobile.email !== oldUser_Same_Email.email
       ) {
-        console.log("Hiii");
         return res.status(409).json({
           success,
           error: "User Already Exists with this Mobile",
@@ -120,10 +118,7 @@ exports.registerController = async (req, res, next) => {
           }
         });
       }
-    }
-
-    // console.log(2);
-    else {
+    } else {
       const oldUser_Same_Mobile = await UserSeller.findOne(
         {
           mobile: mobile,
@@ -131,24 +126,18 @@ exports.registerController = async (req, res, next) => {
         { _id: 0, mobile: 1 }
       );
 
-      console.log(31);
-
       if (oldUser_Same_Mobile) {
         return res.status(409).json({
           success,
           error: "User Already Exists with this Mobile",
         });
-      }
-
-      // console.log(4);
-      else {
+      } else {
         await UserSeller.create({
           name,
           email,
           mobile,
           password: encryptedPassword,
         });
-        console.log(4);
         mailOTP(email, "verifyAccount", (error, encryptedOTP) => {
           if (error) {
             console.error(error);
@@ -249,7 +238,6 @@ exports.loginController = async (req, res, next) => {
       });
     }
   } catch (error) {
-    // console.log(error);
     return res.status(500).json({
       success,
       error: "Couldn't sign up\nSomething went wrong\nInternal Server Error",
@@ -370,7 +358,6 @@ exports.verifyOTP = async (req, res, next) => {
       });
     }
 
-    // console.log(user);
     if (await bcrypt.compare(otp, user.otp)) {
       if (user.verified === true) {
         return res.status(200).json({
@@ -398,7 +385,6 @@ exports.verifyOTP = async (req, res, next) => {
                 message: `"verified" field not updated in db`,
               });
             } else {
-              // console.log(ans);
               if (ans.modifiedCount === 1) {
                 const token = jwt.sign({ email: email }, JWT_SECRET);
                 return res.status(200).json({
@@ -511,6 +497,5 @@ exports.updatePassword = async (req, res, next) => {
       error: "Some internal error occured\nTry Again",
       message: error.message,
     });
-    // console.log(error);
   }
 };

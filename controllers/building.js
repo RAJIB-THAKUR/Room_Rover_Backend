@@ -28,7 +28,6 @@ exports.addBuilding = async (req, res, next) => {
 
   try {
     const _id = jwt.verify(token, JWT_SECRET)._id;
-    console.log(1);
     Building.findOne(
       {
         seller: _id,
@@ -39,16 +38,13 @@ exports.addBuilding = async (req, res, next) => {
         //i flag as the second argument for the RegExp constructor, we make the matching case-insensitive.
       },
       async (err, building) => {
-        console.log(2);
         if (building) {
-          console.log(3);
           return res.status(409).json({
             success,
             error: `You already have a building with name ${name} in ${city}`,
             message: "Already Exists",
           });
         } else {
-          console.log(4);
           Building.create(
             {
               name,
@@ -64,9 +60,7 @@ exports.addBuilding = async (req, res, next) => {
               image: base64,
             },
             async (error, newBuilding) => {
-              console.log(5);
               if (error) {
-                console.log(6);
                 return res.status(500).json({
                   success,
                   error:
@@ -74,7 +68,6 @@ exports.addBuilding = async (req, res, next) => {
                   message: error.message,
                 });
               } else {
-                // console.log(newBuilding);
                 return res.status(200).json({
                   success: true,
                   message: "Building details successfully added.",
@@ -99,7 +92,6 @@ exports.deleteBuilding = async (req, res, next) => {
   const { token, building_id } = req.body;
   try {
     const _id = jwt.verify(token, JWT_SECRET)._id;
-    console.log(_id);
     Building.deleteOne(
       {
         _id: building_id,
@@ -107,7 +99,6 @@ exports.deleteBuilding = async (req, res, next) => {
       },
       async (error, ans) => {
         if (error) {
-          console.log(6);
           return res.status(500).json({
             success,
             error:
@@ -128,7 +119,6 @@ exports.deleteBuilding = async (req, res, next) => {
             ans,
           });
         } else {
-          console.log(6);
           return res.status(500).json({
             success,
             error:
@@ -150,10 +140,7 @@ exports.deleteBuilding = async (req, res, next) => {
 
 //ROUTE-3 contoller --- for Bisu
 exports.allCities_roomCount_minCost = async (req, res, next) => {
-  // const { token, building_id } = req.body;
   try {
-    // const _id = jwt.verify(token, JWT_SECRET)._id;
-    // console.log(_id);
     Building.aggregate([
       {
         $group: {
@@ -346,7 +333,6 @@ exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
   const { token } = req.body;
   try {
     const _id = jwt.verify(token, JWT_SECRET)._id;
-    // console.log(_id);
     Building.aggregate([
       { $match: { seller: new ObjectId(_id) } },
       {

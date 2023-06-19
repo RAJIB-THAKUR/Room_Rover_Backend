@@ -90,7 +90,6 @@ exports.bookRoom = async (req, res, next) => {
       status: "booked",
     });
     if (booking) {
-      console.log(30);
       return res.status(409).json({
         success,
         error: `You  already have a booking in this building.`,
@@ -351,7 +350,6 @@ exports.checkOut_User = async (req, res, next) => {
             message: error.message,
           });
         } else if (ans.modifiedCount === 1) {
-          console.log(12);
 
           Building.updateOne(
             {
