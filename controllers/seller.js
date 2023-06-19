@@ -68,7 +68,7 @@ exports.seller_buildingDetails_type_City = async (req, res, next) => {
 };
 
 //ROUTE-2 controller
-//seller can get Details of users in particular building...along with the status(booked,checked out,cancelled)
+//seller can get Details of users in particular building...along with the status(booked,checkedOut,cancelled)
 //Also seller can get details of all users associated with his buildings(when only token is provided)
 //token(seller_id) is must, building_id and status optional
 exports.seller_booking_Details = async (req, res, next) => {
