@@ -295,7 +295,7 @@ exports.view_wishlist = async (req, res, next) => {
 };
 
 //Route-6 contoller
-//Update User Profile Details
+//Update User Profile Picture
 exports.update_profile = async (req, res) => {
   try {
     const { token, base64, userSellerType } = req.body;
