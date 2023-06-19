@@ -128,13 +128,16 @@ exports.user_seller_profile = async (req, res, next) => {
 
 //Route-3 contoller
 exports.add_to_wishlist = async (req, res, next) => {
-  const { token, building_id } = req.body;
+  const { token, building_id, verify } = req.body;
   try {
     if (!building_id)
       return res.status(401).json({
         success,
         error:
           "Could not add to wishlist due to Internal Server Error\nTry Again",
+        //This error message is for only when you call API with verify=true to know if building is present in wishlist
+        error2:
+          "Could not fetch details due to Internal Server Error\nTry Again",
         message: "building_id missing in request body",
       });
 
@@ -144,6 +147,8 @@ exports.add_to_wishlist = async (req, res, next) => {
         success,
         error:
           "Could not add to wishlist due to Internal Server Error\nTry Again",
+        error2:
+          "Could not fetch details due to Internal Server Error\nTry Again",
         message: "building not available for provided building_id",
       });
     }
@@ -154,23 +159,41 @@ exports.add_to_wishlist = async (req, res, next) => {
       wishlist: building_id,
     });
     if (buildingPresent) {
-      return res.status(409).json({
-        success,
-        error: "Building is already present in your wishlist",
-        message: "already present",
-      });
+      if (verify) {
+        return res.status(200).json({
+          success: true,
+          present_in_wishlist: true,
+        });
+      } else {
+        return res.status(409).json({
+          success,
+          error: "Building is already present in your wishlist",
+          message: "already present",
+        });
+      }
     } else {
-      await User.updateOne({ _id: _id }, { $push: { wishlist: building_id } });
-      return res.status(200).json({
-        success: true,
-        message: "Building added to wishlist.",
-      });
+      if (verify) {
+        return res.status(200).json({
+          success: true,
+          present_in_wishlist: false,
+        });
+      } else {
+        await User.updateOne(
+          { _id: _id },
+          { $push: { wishlist: building_id } }
+        );
+        return res.status(200).json({
+          success: true,
+          message: "Building added to wishlist.",
+        });
+      }
     }
   } catch (error) {
     return res.status(500).json({
       success,
       error:
         "Could not add to wishlist due to Internal Server Error\nTry Again",
+      error2: "Could not fetch details due to Internal Server Error\nTry Again",
       message: error.message,
     });
   }
@@ -273,7 +296,7 @@ exports.view_wishlist = async (req, res, next) => {
 //Update User Profile Details
 exports.update_profile = async (req, res) => {
   try {
-    const { token, name, address, base64, userSellerType } = req.body;
+    const { token, base64, userSellerType } = req.body;
 
     if (userSellerType === "user") UserSeller = User;
     else if (userSellerType === "seller") UserSeller = Seller;
@@ -290,35 +313,35 @@ exports.update_profile = async (req, res) => {
         _id: _id,
       },
       {
-        name: name,
-        address: address,
         image: base64,
       },
       async (error, ans) => {
         if (error) {
           return res.status(500).json({
             success,
-            error: "Could not update details\nSome Internal Error Occured",
+            error:
+              "Could not update profile picture\nSome Internal Server Error Occured",
             message: error.message,
           });
         } else {
           if (ans.modifiedCount === 1) {
             return res.status(200).json({
               success: true,
-              message: "Profile details updated successfully.",
+              message: "Profile picture updated successfully.",
             });
           } else {
             if (ans.matchedCount === 1) {
               return res.status(409).json({
                 success,
                 error:
-                  "Unable to update profile details.\nKindly provide updated details",
-                message: "Same details sent",
+                  "Unable to update profile picture.\nKindly provide updated picture.",
+                message: "Same picture sent",
               });
             } else {
               return res.status(500).json({
                 success,
-                error: "Could not update details\nSome Internal Error Occured",
+                error:
+                  "Could not update profile picture\nSome Internal Server Error Occured",
                 message: error.message,
               });
             }
@@ -329,7 +352,8 @@ exports.update_profile = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success,
-      error: "Could not update details\nSome Internal Error Occured",
+      error:
+        "Could not update profile picture\nSome Internal Server Error Occured",
       message: error.message,
     });
   }
