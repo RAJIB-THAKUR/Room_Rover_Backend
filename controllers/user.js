@@ -127,6 +127,8 @@ exports.user_seller_profile = async (req, res, next) => {
 };
 
 //Route-3 contoller
+//Normally for adding a building to wishlist
+//But when verify=true, API is used to just check if building is present in the wishlist or not
 exports.add_to_wishlist = async (req, res, next) => {
   const { token, building_id, verify } = req.body;
   try {
