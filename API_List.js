@@ -104,3 +104,6 @@
 
 // 6)post
 // https://room-rover-app-backend-mern.onrender.com/api/building_Details
+
+// 7)post
+// https://room-rover-app-backend-mern.onrender.com/api/updateBuilding
