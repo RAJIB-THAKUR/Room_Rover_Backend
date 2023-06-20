@@ -39,4 +39,10 @@ router.post(
 //ROUTE-6 : Get details of building with building_id
 router.post("/building_Details", buildingController.building_Details);
 
+//ROUTE-7 : Update Building Details(Except Room Count)
+router.post(
+  "/updateBuilding",
+  buildingController.updateBuilding
+);
+
 module.exports = router;

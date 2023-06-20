@@ -328,6 +328,176 @@ exports.building_Details = async (req, res, next) => {
   }
 };
 
+//ROUTE-7 contoller
+//Update Building Details(Except Room Count)
+exports.updateBuilding = async (req, res, next) => {
+  const {
+    token,
+    building_id,
+    name,
+    city,
+    address,
+    mobile,
+    buildingType,
+    description,
+    price,
+    // roomCount,
+    base64,
+  } = req.body;
+
+  try {
+    const _id = jwt.verify(token, JWT_SECRET)._id;
+
+    const exist_building = await Building.findOne({
+      _id: building_id,
+      seller: _id,
+    });
+
+    if (!exist_building) {
+      return res.status(404).json({
+        success,
+        error:
+          "Building details cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
+        message:
+          "Building not available for provided building_id against this seller id(token)",
+      });
+    }
+
+    const nameRegex = new RegExp(`^${name.trim()}$`, "i");
+    const cityRegex = new RegExp(`^${city.trim()}$`, "i");
+    // Both name and city match (ignoring case and extra spaces)
+    if (
+      nameRegex.test(exist_building.name) &&
+      cityRegex.test(exist_building.city)
+    ) {
+      Building.updateOne(
+        { _id: building_id, seller: _id },
+        {
+          // name,
+          // city,
+          address,
+          mobile,
+          buildingType,
+          description,
+          price,
+          // roomCount,
+          // available: roomCount,
+          image: base64,
+        },
+        async (error, ans) => {
+          if (error) {
+            return res.status(500).json({
+              success,
+              error:
+                "Building details cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
+              message: error.message,
+            });
+          } else {
+            if (ans.modifiedCount === 1) {
+              return res.status(200).json({
+                success: true,
+                message: "Building details updated successfully.",
+              });
+            } else {
+              if (ans.matchedCount === 1) {
+                return res.status(409).json({
+                  success,
+                  error:
+                    "Building details cannot be updated at this moment\nKindly provide updated picture.",
+                  message: "Same details sent",
+                });
+              } else {
+                return res.status(500).json({
+                  success,
+                  error:
+                    "Building details cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
+                  message: error.message,
+                });
+              }
+            }
+          }
+        }
+      );
+    } else {
+      //check if updated details is such that seller already has some other building with this name & city combination
+      Building.findOne(
+        {
+          seller: _id,
+          name: new RegExp("^" + name.trim() + "$", "i"),
+          city: new RegExp("^" + city.trim() + "$", "i"),
+
+          // The ^ and $ symbols ensure that the entire value is matched from the beginning to the end, effectively performing an exact match.
+          //i flag as the second argument for the RegExp constructor, we make the matching case-insensitive.
+        },
+        async (err, building) => {
+          if (building) {
+            return res.status(409).json({
+              success,
+              error: `Couldn't update building details\nYou already have a building with name ${name} in ${city}`,
+              message: "Already Exists",
+            });
+          } else {
+            Building.updateOne(
+              { _id: building_id, seller: _id },
+              {
+                name,
+                city,
+                address,
+                mobile,
+                buildingType,
+                description,
+                price,
+                // roomCount,
+                // available: roomCount,
+                image: base64,
+              },
+              async (error, ans) => {
+                if (error) {
+                  return res.status(500).json({
+                    success,
+                    error:
+                      "Building details cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
+                    message: error.message,
+                  });
+                } else {
+                  if (ans.modifiedCount === 1) {
+                    return res.status(200).json({
+                      success: true,
+                      message: "Building details updated successfully.",
+                    });
+                  } else {
+                    if (ans.matchedCount === 1) {
+                      return res.status(409).json({
+                        success,
+                        error:
+                          "Building details cannot be updated at this moment\nKindly provide updated picture.",
+                        message: "Same Building details sent",
+                      });
+                    } else {
+                      return res.status(500).json({
+                        success,
+                        error:
+                          "Building details cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
+                        message: error.message,
+                      });
+                    }
+                  }
+                }
+              }
+            );
+          }
+        }
+      );
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error: "Couldn't sign up\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
+
 //Filhal not using
 exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
   const { token } = req.body;
