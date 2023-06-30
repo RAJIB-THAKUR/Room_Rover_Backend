@@ -30,6 +30,7 @@ exports.addBuilding = async (req, res, next) => {
     const _id = jwt.verify(token, JWT_SECRET)._id;
     Building.findOne(
       {
+        isPresent: true,
         seller: _id,
         name: new RegExp("^" + name.trim() + "$", "i"),
         city: new RegExp("^" + city.trim() + "$", "i"),
@@ -38,7 +39,8 @@ exports.addBuilding = async (req, res, next) => {
         //i flag as the second argument for the RegExp constructor, we make the matching case-insensitive.
       },
       async (err, building) => {
-        if (building) {
+        console.log(building);
+        if (building && building.isPresent === true) {
           return res.status(409).json({
             success,
             error: `You already have a building with name ${name} in ${city}`,
@@ -51,13 +53,14 @@ exports.addBuilding = async (req, res, next) => {
               city,
               address,
               mobile,
-              buildingType,
+              buildingType: buildingType,
               description,
               price,
               roomCount,
               available: roomCount,
               seller: _id,
               image: base64,
+              isPresent: true,
             },
             async (error, newBuilding) => {
               if (error) {
@@ -91,7 +94,65 @@ exports.addBuilding = async (req, res, next) => {
 exports.deleteBuilding = async (req, res, next) => {
   const { token, building_id } = req.body;
   try {
+    const booking = await Booking.findOne({
+      building: building_id,
+      status: "booked",
+    });
+    if (booking) {
+      return res.status(409).json({
+        success,
+        error:
+          "Building cannot be deleted at moment as customer has a booking\nTry after checking out the customer first.",
+      });
+    }
+
+    const building = await Building.findOne({
+      _id: building_id,
+      isPresent: true,
+    });
+    if (!building) {
+      return res.status(404).json({
+        success,
+        error:
+          "Building could not be deleted at this moment\nSomething went wrong\nInternal Server Error",
+        message: "No building present with this building_ID provided",
+      });
+    }
+
     const _id = jwt.verify(token, JWT_SECRET)._id;
+    //Change building's isPresent to false
+    Building.updateOne(
+      {
+        _id: building_id,
+        seller: _id,
+      },
+      { isPresent: false },
+      async (error, ans) => {
+        if (error) {
+          return res.status(500).json({
+            success,
+            error:
+              "Building could not be deleted at this moment\nSomething went wrong\nInternal Server Error",
+            message: "isPresent field not updated in db",
+          });
+        } else {
+          if (ans.modifiedCount === 1) {
+            return res.status(200).json({
+              success: true,
+              message: "Building successfully deleted.",
+            });
+          } else
+            return res.status(500).json({
+              success,
+              error:
+                "SBuilding could not be deleted at this moment\nSomething went wrong\nInternal Server Error",
+              message: "Error",
+            });
+        }
+      }
+    );
+
+    /*
     Building.deleteOne(
       {
         _id: building_id,
@@ -127,7 +188,7 @@ exports.deleteBuilding = async (req, res, next) => {
           });
         }
       }
-    );
+    );*/
   } catch (error) {
     return res.status(500).json({
       success,
@@ -142,6 +203,11 @@ exports.deleteBuilding = async (req, res, next) => {
 exports.allCities_roomCount_minCost = async (req, res, next) => {
   try {
     Building.aggregate([
+      {
+        $match: {
+          isPresent: true,
+        },
+      },
       {
         $group: {
           _id: "$city",
@@ -179,6 +245,11 @@ exports.allCities_roomCount_minCost = async (req, res, next) => {
 exports.allBuildingTypes_roomCount_minCost = async (req, res, next) => {
   try {
     Building.aggregate([
+      {
+        $match: {
+          isPresent: true,
+        },
+      },
       {
         $group: {
           _id: "$buildingType",
@@ -218,7 +289,7 @@ exports.buildingDetails_Type_City_wise = async (req, res, next) => {
   const { city, name, buildingType, minCost, maxCost } = req.body;
   try {
     const match = {};
-
+    match.isPresent = true;
     if (city) {
       // match.city = city;
       //The $regex operator allows you to use regular expressions to match a string. In this case, we're using a regular expression to make the matching of city case-insensitive.
@@ -297,7 +368,7 @@ exports.building_Details = async (req, res, next) => {
       message: "building_id missing in request body",
     });
   try {
-    Building.find({ _id: building_id })
+    Building.find({ _id: building_id, isPresent: true })
       .populate({
         path: "seller",
         model: "Seller",
@@ -351,6 +422,7 @@ exports.updateBuilding = async (req, res, next) => {
     const exist_building = await Building.findOne({
       _id: building_id,
       seller: _id,
+      isPresent: true,
     });
 
     if (!exist_building) {
@@ -359,7 +431,7 @@ exports.updateBuilding = async (req, res, next) => {
         error:
           "Building details cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
         message:
-          "Building not available for provided building_id against this seller id(token)",
+          "Building not available for provided building_id against this seller id(token) or building is deleted by seller",
       });
     }
 
@@ -371,7 +443,7 @@ exports.updateBuilding = async (req, res, next) => {
       cityRegex.test(exist_building.city)
     ) {
       Building.updateOne(
-        { _id: building_id, seller: _id },
+        { _id: building_id, seller: _id, isPresent: true },
         {
           // name,
           // city,
@@ -422,6 +494,7 @@ exports.updateBuilding = async (req, res, next) => {
       //check if updated details is such that seller already has some other building with this name & city combination
       Building.findOne(
         {
+          isPresent: true,
           seller: _id,
           name: new RegExp("^" + name.trim() + "$", "i"),
           city: new RegExp("^" + city.trim() + "$", "i"),
@@ -438,7 +511,7 @@ exports.updateBuilding = async (req, res, next) => {
             });
           } else {
             Building.updateOne(
-              { _id: building_id, seller: _id },
+              { _id: building_id, seller: _id, isPresent: true },
               {
                 name,
                 city,

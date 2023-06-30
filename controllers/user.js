@@ -140,7 +140,10 @@ exports.add_to_wishlist = async (req, res, next) => {
         message: "building_id missing in request body",
       });
 
-    const building = await Building.findOne({ _id: building_id });
+    const building = await Building.findOne({
+      _id: building_id,
+      isPresent: true,
+    });
     if (!building) {
       return res.status(404).json({
         success,
@@ -148,7 +151,8 @@ exports.add_to_wishlist = async (req, res, next) => {
           "Could not add to wishlist due to Internal Server Error\nTry Again",
         error2:
           "Could not fetch details due to Internal Server Error\nTry Again",
-        message: "building not available for provided building_id",
+        message:
+          "building not available for provided building_id or is deleted by seller",
       });
     }
     const _id = jwt.verify(token, JWT_SECRET)._id;
@@ -210,13 +214,17 @@ exports.remove_from_wishlist = async (req, res, next) => {
         message: "building_id missing in request body",
       });
 
-    const building = await Building.findOne({ _id: building_id });
+    const building = await Building.findOne({
+      _id: building_id,
+      isPresent: true,
+    });
     if (!building) {
       return res.status(404).json({
         success,
         error:
           "Could not add to wishlist due to Internal Server Error\nTry Again",
-        message: "building not available for provided building_id",
+        message:
+          "building not available for provided building_id or is deleted by seller",
       });
     }
     const _id = jwt.verify(token, JWT_SECRET)._id;
@@ -263,6 +271,7 @@ exports.view_wishlist = async (req, res, next) => {
       path: "wishlist",
       model: "Building",
       // select: "_id name mobile email address",
+      match: { isPresent: true },
       populate: {
         path: "seller",
         model: "Seller",

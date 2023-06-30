@@ -52,7 +52,7 @@ exports.bookRoom = async (req, res, next) => {
     }
 
     const building = await Building.findOne(
-      { _id: building_id },
+      { _id: building_id, isPresent: true },
       { _id: 1, available: 1, booked: 1, price: 1 }
     );
 
@@ -61,7 +61,8 @@ exports.bookRoom = async (req, res, next) => {
         success,
         error:
           "Booking cannot be done at this moment\nSomething went wrong\nInternal Server Error",
-        message: "building not available for provided building_id",
+        message:
+          "building not available for provided building_id or is deleted by seller",
       });
     }
 
@@ -108,6 +109,7 @@ exports.bookRoom = async (req, res, next) => {
     await Building.updateOne(
       {
         _id: building_id,
+        isPresent: true,
       },
       {
         booked: building.booked + 1,
@@ -203,15 +205,19 @@ exports.cancelBooking = async (req, res, next) => {
     }
 
     const building_id = booking.building;
-    const building = await Building.findOne({ _id: building_id });
+    const building = await Building.findOne({
+      _id: building_id,
+      isPresent: true,
+    });
     if (!building) {
-      return res.status(500).json({
+      return res.status(404).json({
         success,
         error:
           "Booking cannot be cancelled at this moment\nSomething went wrong\nInternal Server Error",
         message: "Building collection's available & booked fields not updated",
         message2:
           "Because there is no building with the building_ID present in booking collection for this booking_ID provided",
+        message3: "Also possible that seller has deleted this building",
       });
     }
 
@@ -248,6 +254,7 @@ exports.cancelBooking = async (req, res, next) => {
     await Building.updateOne(
       {
         _id: building_id,
+        isPresent: true,
       },
       {
         booked: building.booked - 1,
@@ -317,13 +324,17 @@ exports.checkOut_User = async (req, res, next) => {
 
     const building_id = booking.building;
 
-    const building = await Building.findOne({ _id: building_id });
+    const building = await Building.findOne({
+      _id: building_id,
+      isPresent: true,
+    });
     if (!building) {
       return res.status(404).json({
         success,
         error:
           "User cannot be checked out at the moment\nSomething went wrong\nInternal Server Error",
-        message: "Building not available for provided building_id.",
+        message:
+          "Building not available for provided building_id OR seller has deleted this building",
       });
     }
     if (building.booked < 1) {
@@ -350,10 +361,10 @@ exports.checkOut_User = async (req, res, next) => {
             message: error.message,
           });
         } else if (ans.modifiedCount === 1) {
-
           Building.updateOne(
             {
               _id: building_id,
+              isPresent: true,
             },
             {
               booked: building.booked - 1,

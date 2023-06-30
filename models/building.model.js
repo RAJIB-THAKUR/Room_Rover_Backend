@@ -63,6 +63,11 @@ const buildingSchema = new mongoose.Schema({
     ref: "Seller",
     required: true,
   },
+  isPresent: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
   // bookings: [
   //   {
   //     type: mongoose.Schema.Types.ObjectId,

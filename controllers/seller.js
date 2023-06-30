@@ -20,13 +20,16 @@ exports.seller_buildingDetails_type_City = async (req, res, next) => {
     const _id = jwt.verify(token, JWT_SECRET)._id;
     const match = {
       seller: new ObjectId(_id),
+      isPresent: true,
     };
 
     if (city) {
       match.city = { $regex: new RegExp(".*" + city.trim() + ".*", "i") };
     }
     if (buildingType) {
-      match.buildingType = { $regex: new RegExp(".*" + buildingType.trim() + ".*", "i") };
+      match.buildingType = {
+        $regex: new RegExp(".*" + buildingType.trim() + ".*", "i"),
+      };
     }
 
     Building.aggregate([
@@ -147,7 +150,7 @@ exports.seller_update_RoomCount = async (req, res, next) => {
     }
 
     const building = await Building.findOne(
-      { _id: building_id },
+      { _id: building_id, isPresent: true },
       { _id: 1, roomCount: 1, available: 1, booked: 1 }
     );
 
@@ -156,7 +159,8 @@ exports.seller_update_RoomCount = async (req, res, next) => {
         success,
         error:
           "Room count cannot be updated at this moment\nSomething went wrong\nInternal Server Error",
-        message: "building not available for provided building_id",
+        message:
+          "building not available for provided building_id OR is deleted by seller",
       });
     }
     if (newRoomCount === building.roomCount) {
@@ -179,6 +183,7 @@ exports.seller_update_RoomCount = async (req, res, next) => {
     Building.updateOne(
       {
         _id: building_id,
+        isPresent: true,
       },
       {
         roomCount: newRoomCount,
@@ -228,6 +233,7 @@ exports.seller_Cities_List = async (req, res, next) => {
 
     Building.find({
       seller: _id,
+      isPresent: true,
     }).distinct("city", (error, result) => {
       if (error) {
         return res.status(500).json({
@@ -262,6 +268,7 @@ exports.seller_BuildingTypes_List = async (req, res, next) => {
 
     Building.find({
       seller: _id,
+      isPresent: true,
     }).distinct("buildingType", (error, result) => {
       if (error) {
         return res.status(500).json({
