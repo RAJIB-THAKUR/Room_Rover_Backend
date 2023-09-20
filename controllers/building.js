@@ -475,7 +475,7 @@ exports.updateBuilding = async (req, res, next) => {
                 return res.status(409).json({
                   success,
                   error:
-                    "Building details cannot be updated at this moment\nKindly provide updated picture.",
+                    "Building details cannot be updated at this moment\nKindly provide updated details.",
                   message: "Same details sent",
                 });
               } else {
@@ -614,6 +614,106 @@ exports.seller_buildingDetails_allCityWise = async (req, res, next) => {
       success,
       error:
         "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};
+
+//Route-8 Just to for DEBUGGING...finding building with seller which dont exist actually
+/*
+exports.All_building_Details = async (req, res, next) => {
+  // const { building_id } = req.body;
+
+  try {
+    console.log("Hiiiii");
+    Building.find({
+      seller: { $nin: Seller.find({}, { _id: 1 }) },
+      isPresent: true,
+    })
+      .populate({
+        path: "seller",
+        model: "Seller",
+        select: "_id name mobile email address",
+      })
+      .exec((error, result) => {
+        console.log("Hiiiii2");
+        if (error) {
+          console.log("Hiiiii3");
+          return res.status(500).json({
+            success,
+            error:
+              "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
+            message: error.message,
+          });
+        } else {
+          return res.status(200).json({
+            success: true,
+            data: result,
+          });
+        }
+      });
+  } catch (error) {
+    return res.status(500).json({
+      success,
+      error:
+        "Data cannot be fetched at this moment\nSomething went wrong\nInternal Server Error",
+      message: error.message,
+    });
+  }
+};*/
+exports.All_building_Details = async (req, res, next) => {
+  try {
+    Building.aggregate([
+      {
+        $lookup: {
+          from: "sellers",
+          localField: "seller",
+          foreignField: "_id",
+          as: "sellerDetails",
+        },
+      },
+      {
+        $match: {
+          sellerDetails: { $size: 0 },
+          isPresent: true,
+        },
+      },
+    ])
+      .project({ sellerDetails: 0 })
+      .exec((error, result) => {
+        if (error) {
+          return res.status(500).json({
+            success: false,
+            error:
+              "Data cannot be fetched at this moment. Something went wrong.",
+            message: error.message,
+          });
+        } else {
+          return res.status(200).json({
+            success: true,
+            data: result,
+          });
+        }
+      });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Data cannot be fetched at this moment. Something went wrong.",
+      message: error.message,
+    });
+  }
+};
+
+exports.deleteFewBuilding = async (req, res, next) => {
+  try {
+    await Building.deleteMany({ seller: "648a890b62392dfa422160ae" });
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Data cannot be fetched at this moment. Something went wrong.",
       message: error.message,
     });
   }
