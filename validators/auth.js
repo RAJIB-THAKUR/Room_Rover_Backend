@@ -2,6 +2,7 @@ const { check } = require("express-validator");
 
 exports.userRegisterValidator = [
   check("name")
+    .trim()
     .notEmpty()
     .withMessage("Name is required")
     .isLength({
